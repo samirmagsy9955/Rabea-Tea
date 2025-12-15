@@ -3,9 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>تقييم الجودة - شركة باعشن</title>
+    <title>نظام الجودة - شركة باعشن</title>
+   
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.4.0/css/all.min.css">
+    
+    <!-- Chart.js for Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.js"></script>
+    
     <style>
         :root {
             --primary-color: #2c5aa0;
@@ -31,6 +39,12 @@
             box-sizing: border-box;
         }
 
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow-x: hidden;
+        }
+
         body {
             font-family: 'Cairo', sans-serif;
             background: linear-gradient(-45deg, #667eea, #764ba2, #2c5aa0, #1e3c72);
@@ -47,6 +61,155 @@
             100% { background-position: 0% 50%; }
         }
 
+        /* ========== LOADING PAGE STYLES ========== */
+        .loading-page {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .loading-page.hidden {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease;
+        }
+
+        .tea-cup-container {
+            position: relative;
+            width: 150px;
+            height: 150px;
+        }
+
+        /* Tea Cup */
+        .tea-cup {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            border: 3px solid white;
+            border-radius: 0 0 20px 20px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .tea-cup::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to bottom, #8B4513 0%, #D2691E 100%);
+            border-radius: 0 0 20px 20px;
+            animation: fillTea 2s ease-in-out infinite;
+            bottom: 0;
+        }
+
+        .tea-cup::after {
+            content: '';
+            position: absolute;
+            width: 35px;
+            height: 50px;
+            border: 3px solid white;
+            border-radius: 0 20px 20px 0;
+            top: 20px;
+            right: -40px;
+        }
+
+        @keyframes fillTea {
+            0% { height: 0%; }
+            50% { height: 100%; }
+            100% { height: 0%; }
+        }
+
+        /* Tea Bag */
+        .tea-bag {
+            position: absolute;
+            width: 30px;
+            height: 40px;
+            background: #8B4513;
+            border-radius: 3px;
+            top: -20px;
+            left: 50%;
+            transform: translateX(-50%);
+            animation: dunkTea 2s ease-in-out infinite;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .tea-bag::before {
+            content: '';
+            position: absolute;
+            width: 2px;
+            height: 25px;
+            background: white;
+            top: -25px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        @keyframes dunkTea {
+            0% { transform: translateX(-50%) translateY(0); }
+            25% { transform: translateX(-50%) translateY(60px); }
+            50% { transform: translateX(-50%) translateY(60px); }
+            75% { transform: translateX(-50%) translateY(0); }
+            100% { transform: translateX(-50%) translateY(0); }
+        }
+
+        /* Steam */
+        .steam {
+            position: absolute;
+            width: 8px;
+            height: 20px;
+            background: rgba(255, 255, 255, 0.6);
+            border-radius: 50%;
+            top: -30px;
+        }
+
+        .steam:nth-child(1) { left: 30%; animation: steamRise 1.5s ease-in infinite; }
+        .steam:nth-child(2) { left: 50%; animation: steamRise 1.5s ease-in 0.3s infinite; }
+        .steam:nth-child(3) { left: 70%; animation: steamRise 1.5s ease-in 0.6s infinite; }
+
+        @keyframes steamRise {
+            0% { opacity: 0; transform: translateY(0); }
+            50% { opacity: 1; }
+            100% { opacity: 0; transform: translateY(-40px); }
+        }
+
+        .loading-text {
+            color: white;
+            font-size: 1.5em;
+            font-weight: 600;
+            text-align: center;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        .loading-dots span {
+            animation: blink 1.4s infinite;
+        }
+
+        .loading-dots span:nth-child(2) { animation-delay: 0.2s; }
+        .loading-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes blink {
+            0%, 60%, 100% { opacity: 0.3; }
+            30% { opacity: 1; }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /* ========== MAIN CONTENT STYLES ========== */
         .floating-elements {
             position: fixed;
             top: 0;
@@ -64,65 +227,23 @@
             animation: float 20s infinite linear;
         }
 
-        .floating-element:nth-child(1) {
-            width: 80px;
-            height: 80px;
-            top: 10%;
-            left: 10%;
-            animation-delay: 0s;
-        }
-
-        .floating-element:nth-child(2) {
-            width: 120px;
-            height: 120px;
-            top: 20%;
-            right: 15%;
-            animation-delay: -5s;
-        }
-
-        .floating-element:nth-child(3) {
-            width: 60px;
-            height: 60px;
-            bottom: 20%;
-            left: 20%;
-            animation-delay: -10s;
-        }
-
-        .floating-element:nth-child(4) {
-            width: 100px;
-            height: 100px;
-            bottom: 10%;
-            right: 10%;
-            animation-delay: -15s;
-        }
+        .floating-element:nth-child(1) { width: 80px; height: 80px; top: 10%; left: 10%; animation-delay: 0s; }
+        .floating-element:nth-child(2) { width: 120px; height: 120px; top: 20%; right: 15%; animation-delay: -5s; }
+        .floating-element:nth-child(3) { width: 60px; height: 60px; bottom: 20%; left: 20%; animation-delay: -10s; }
+        .floating-element:nth-child(4) { width: 100px; height: 100px; bottom: 10%; right: 10%; animation-delay: -15s; }
 
         @keyframes float {
-            0% {
-                transform: translateY(0) rotate(0deg);
-                opacity: 1;
-            }
-            25% {
-                transform: translateY(-100px) rotate(90deg);
-                opacity: 0.7;
-            }
-            50% {
-                transform: translateY(0) rotate(180deg);
-                opacity: 1;
-            }
-            75% {
-                transform: translateY(100px) rotate(270deg);
-                opacity: 0.7;
-            }
-            100% {
-                transform: translateY(0) rotate(360deg);
-                opacity: 1;
-            }
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            25% { transform: translateY(-100px) rotate(90deg); opacity: 0.7; }
+            50% { transform: translateY(0) rotate(180deg); opacity: 1; }
+            75% { transform: translateY(100px) rotate(270deg); opacity: 0.7; }
+            100% { transform: translateY(0) rotate(360deg); opacity: 1; }
         }
 
         .container {
-            max-width: 1000px;
+            max-width: 1200px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.95);
+            background: rgba(255, 255, 255, 0.97);
             border-radius: var(--border-radius);
             box-shadow: var(--shadow-lg);
             overflow: hidden;
@@ -131,20 +252,14 @@
         }
 
         @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(50px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .header {
             background: var(--gradient-primary);
             color: white;
-            padding: 30px;
+            padding: 30px 20px;
             text-align: center;
             position: relative;
             overflow: hidden;
@@ -179,66 +294,35 @@
         }
 
         .logo {
-            max-width: 200px;
+            max-width: 150px;
             height: auto;
             background: white;
-            padding: 15px;
+            padding: 10px;
             border-radius: 10px;
             box-shadow: var(--shadow-md);
-            transform: rotateY(0deg);
             transition: transform 0.6s ease;
         }
 
-        .logo:hover {
-            transform: rotateY(180deg);
-        }
+        .logo:hover { transform: rotateY(180deg); }
 
         .header h1 {
-            font-size: 2.2em;
+            font-size: 2em;
             font-weight: 900;
             margin-bottom: 10px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
             position: relative;
             z-index: 1;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
         }
 
         .header p {
-            font-size: 1.2em;
+            font-size: 1.1em;
             opacity: 0.95;
             position: relative;
             z-index: 1;
         }
 
         .content {
-            padding: 40px;
-        }
-
-        .products-banner {
-            margin-bottom: 30px;
-            text-align: center;
-            border-radius: var(--border-radius);
-            overflow: hidden;
-            position: relative;
-        }
-
-        .products-banner img {
-            max-width: 100%;
-            height: 200px;
-            object-fit: cover;
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-md);
-            transition: transform 0.5s ease;
-        }
-
-        .products-banner img:hover {
-            transform: scale(1.05);
+            padding: 30px 20px;
         }
 
         .form-section {
@@ -252,22 +336,10 @@
             display: block;
             opacity: 1;
             transform: translateX(0);
-            animation: fadeInRight 0.5s ease;
-        }
-
-        @keyframes fadeInRight {
-            from {
-                opacity: 0;
-                transform: translateX(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
         }
 
         .form-group {
-            margin-bottom: 30px;
+            margin-bottom: 25px;
             position: relative;
         }
 
@@ -276,16 +348,17 @@
             margin-bottom: 10px;
             font-weight: 700;
             color: var(--primary-color);
-            font-size: 1.1em;
+            font-size: 1.05em;
             display: flex;
             align-items: center;
             gap: 10px;
         }
 
         .form-group input,
-        .form-group select {
+        .form-group select,
+        .form-group textarea {
             width: 100%;
-            padding: 15px 20px;
+            padding: 12px 15px;
             border: 2px solid #e0e0e0;
             border-radius: var(--border-radius);
             font-size: 1em;
@@ -294,17 +367,88 @@
             background: var(--light-color);
         }
 
+        .form-group textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
         .form-group input:focus,
-        .form-group select:focus {
+        .form-group select:focus,
+        .form-group textarea:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(44, 90, 160, 0.2);
             transform: translateY(-2px);
         }
 
-        .form-group input:valid,
-        .form-group select:valid {
-            border-color: var(--success-color);
+        .error-message {
+            color: var(--danger-color);
+            font-size: 0.9em;
+            margin-top: 5px;
+            display: none;
+        }
+
+        .user-type-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .user-type-card {
+            background: linear-gradient(135deg, var(--light-color) 0%, #ffffff 100%);
+            border: 3px solid #e0e0e0;
+            border-radius: var(--border-radius);
+            padding: 30px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .user-type-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .user-type-card.selected {
+            border-color: var(--primary-color);
+            background: var(--gradient-primary);
+            color: white;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .user-type-card i {
+            font-size: 3em;
+            color: var(--primary-color);
+            margin-bottom: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .user-type-card.selected i {
+            color: white;
+        }
+
+        .user-type-card h3 {
+            font-size: 1.3em;
+            margin-bottom: 10px;
+            color: var(--primary-color);
+            transition: all 0.3s ease;
+        }
+
+        .user-type-card.selected h3 {
+            color: white;
+        }
+
+        .user-type-card p {
+            font-size: 0.95em;
+            color: #666;
+            transition: all 0.3s ease;
+        }
+
+        .user-type-card.selected p {
+            color: rgba(255, 255, 255, 0.9);
         }
 
         .question-container {
@@ -319,20 +463,9 @@
             overflow: hidden;
         }
 
-        .question-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 5px;
-            height: 100%;
-            background: var(--gradient-primary);
-            transform: scaleY(0);
-            transition: transform 0.3s ease;
-        }
-
-        .question-container:hover::before {
-            transform: scaleY(1);
+        .question-container:hover {
+            box-shadow: var(--shadow-md);
+            transform: translateY(-2px);
         }
 
         .question-number {
@@ -347,611 +480,641 @@
             font-weight: 900;
             margin-left: 15px;
             font-size: 1.2em;
-            box-shadow: var(--shadow-sm);
-            animation: bounce 2s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
         }
 
         .question-text {
-            font-size: 1.3em;
-            font-weight: 700;
+            font-size: 1.1em;
+            font-weight: 600;
             color: var(--dark-color);
-            margin-bottom: 20px;
-            display: inline-block;
-            line-height: 1.5;
+            margin-right: 15px;
         }
 
         .answer-options {
+            margin-top: 20px;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
             gap: 15px;
         }
 
         .answer-option {
-            background: white;
-            padding: 20px;
+            padding: 15px;
             border: 2px solid #e0e0e0;
-            border-radius: var(--border-radius);
+            border-radius: 10px;
             cursor: pointer;
             transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .answer-option::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 0;
-            height: 100%;
-            background: var(--light-color);
-            transition: width 0.3s ease;
-            z-index: 0;
-        }
-
-        .answer-option:hover::before {
-            width: 100%;
+            background: white;
+            text-align: center;
+            font-weight: 600;
+            color: var(--dark-color);
         }
 
         .answer-option:hover {
             border-color: var(--primary-color);
-            transform: translateX(-10px) scale(1.02);
-            box-shadow: var(--shadow-md);
-        }
-
-        .answer-option input[type="radio"] {
-            width: 24px;
-            height: 24px;
-            cursor: pointer;
-            z-index: 1;
-            accent-color: var(--primary-color);
-        }
-
-        .answer-option label {
-            flex: 1;
-            cursor: pointer;
-            margin: 0;
-            font-size: 1em;
-            color: var(--dark-color);
-            font-weight: 600;
-            z-index: 1;
-            line-height: 1.6;
+            background: rgba(44, 90, 160, 0.05);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-sm);
         }
 
         .answer-option.selected {
-            border-color: var(--primary-color);
-            background: linear-gradient(135deg, #e8f0fe 0%, #ffffff 100%);
-            box-shadow: var(--shadow-md);
-            transform: translateX(-10px);
-        }
-
-        .answer-option.selected::before {
-            width: 100%;
-        }
-
-        .progress-bar {
-            width: 100%;
-            height: 12px;
-            background: var(--light-color);
-            border-radius: 10px;
-            margin-bottom: 30px;
-            overflow: hidden;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .progress-fill {
-            height: 100%;
             background: var(--gradient-primary);
-            transition: width 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
-            border-radius: 10px;
-            position: relative;
-            overflow: hidden;
+            color: white;
+            border-color: var(--primary-color);
+            box-shadow: var(--shadow-md);
         }
 
-        .progress-fill::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-            animation: shimmer 2s infinite;
-        }
-
-        @keyframes shimmer {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-
-        .progress-text {
-            text-align: center;
-            margin-bottom: 15px;
-            color: var(--dark-color);
-            font-weight: 700;
-            font-size: 1.1em;
+        .button-group {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
         .btn {
-            padding: 18px 45px;
+            padding: 12px 30px;
             border: none;
             border-radius: var(--border-radius);
-            font-size: 1.1em;
+            font-size: 1em;
             font-weight: 700;
             cursor: pointer;
             transition: all 0.3s ease;
             font-family: 'Cairo', sans-serif;
             display: inline-flex;
             align-items: center;
-            gap: 12px;
-            position: relative;
-            overflow: hidden;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .btn::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(255,255,255,0.1), rgba(255,255,255,0.3));
-            transform: translateX(-100%);
-            transition: transform 0.5s ease;
-        }
-
-        .btn:hover::before {
-            transform: translateX(100%);
+            gap: 10px;
+            min-width: 150px;
+            justify-content: center;
         }
 
         .btn-primary {
             background: var(--gradient-primary);
             color: white;
-            box-shadow: var(--shadow-md);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(44, 90, 160, 0.4);
-        }
-
-        .btn-secondary {
-            background: var(--light-color);
-            color: var(--dark-color);
-            margin-left: 15px;
             box-shadow: var(--shadow-sm);
         }
 
-        .btn-secondary:hover {
-            background: #e9ecef;
+        .btn-primary:hover:not(:disabled) {
             transform: translateY(-3px);
             box-shadow: var(--shadow-md);
         }
 
-        .btn-success {
-            background: linear-gradient(135deg, var(--success-color) 0%, #20c997 100%);
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-secondary {
+            background: var(--light-color);
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary-color);
             color: white;
-            box-shadow: var(--shadow-md);
+            transform: translateY(-3px);
+        }
+
+        .btn-success {
+            background: var(--success-color);
+            color: white;
         }
 
         .btn-success:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 15px 30px rgba(40, 167, 69, 0.4);
+            background: #218838;
+            transform: translateY(-3px);
         }
 
-        .button-group {
-            display: flex;
-            justify-content: space-between;
-            margin-top: 40px;
-            flex-wrap: wrap;
-            gap: 20px;
+        .btn-danger {
+            background: var(--danger-color);
+            color: white;
         }
 
-        .center-button {
-            display: flex;
-            justify-content: center;
-            margin-top: 30px;
+        .btn-danger:hover {
+            background: #c82333;
+            transform: translateY(-3px);
         }
 
-        .user-type-selector {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 25px;
-            margin: 40px 0;
+        .btn-whatsapp {
+            background: #25D366;
+            color: white;
         }
 
-        .user-type-card {
-            padding: 40px 25px;
-            background: white;
-            border: 3px solid #e0e0e0;
-            border-radius: var(--border-radius);
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.4s ease;
-            position: relative;
-            overflow: hidden;
-            box-shadow: var(--shadow-sm);
+        .btn-whatsapp:hover {
+            background: #20ba5a;
+            transform: translateY(-3px);
         }
 
-        .user-type-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
+        .progress-bar {
             width: 100%;
-            height: 5px;
-            background: var(--gradient-primary);
-            transform: translateX(-100%);
-            transition: transform 0.3s ease;
-        }
-
-        .user-type-card:hover {
-            transform: translateY(-10px) scale(1.05);
-            box-shadow: var(--shadow-lg);
-            border-color: var(--primary-color);
-        }
-
-        .user-type-card:hover::before {
-            transform: translateX(0);
-        }
-
-        .user-type-card.selected {
-            border-color: var(--primary-color);
-            background: linear-gradient(135deg, var(--light-color) 0%, #ffffff 100%);
-            box-shadow: var(--shadow-lg);
-            transform: translateY(-5px);
-        }
-
-        .user-type-card.selected::before {
-            transform: translateX(0);
-        }
-
-        .user-type-icon {
-            font-size: 3.5em;
-            color: var(--primary-color);
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
             margin-bottom: 20px;
-            transition: all 0.3s ease;
+            overflow: hidden;
         }
 
-        .user-type-card:hover .user-type-icon {
-            transform: scale(1.2) rotate(10deg);
-        }
-
-        .user-type-title {
-            font-size: 1.8em;
-            font-weight: 900;
-            color: var(--primary-color);
-            margin-bottom: 15px;
-        }
-
-        .user-type-desc {
-            color: var(--dark-color);
-            font-size: 1em;
-            line-height: 1.6;
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient-primary);
+            transition: width 0.3s ease;
+            border-radius: 10px;
         }
 
         .results-container {
+            background: linear-gradient(135deg, var(--light-color) 0%, #ffffff 100%);
+            padding: 30px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-md);
+            margin-top: 30px;
+        }
+
+        .results-header {
             text-align: center;
-            padding: 50px 20px;
+            margin-bottom: 30px;
         }
 
-        .score-circle {
-            width: 250px;
-            height: 250px;
-            border-radius: 50%;
-            background: conic-gradient(var(--primary-color) 0% 0%, var(--light-color) 0% 100%);
-            margin: 40px auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            box-shadow: var(--shadow-lg);
-            position: relative;
-            animation: scaleIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+        .results-header h2 {
+            color: var(--primary-color);
+            font-size: 1.8em;
+            margin-bottom: 10px;
         }
 
-        .score-circle::before {
-            content: '';
-            position: absolute;
-            width: 220px;
-            height: 220px;
-            border-radius: 50%;
-            background: var(--gradient-primary);
-            z-index: 1;
-        }
-
-        .score-circle-content {
-            position: relative;
-            z-index: 2;
-        }
-
-        @keyframes scaleIn {
-            from {
-                transform: scale(0) rotate(-180deg);
-            }
-            to {
-                transform: scale(1) rotate(0deg);
-            }
-        }
-
-        .score-number {
-            font-size: 4em;
+        .score-display {
+            font-size: 3em;
             font-weight: 900;
-            line-height: 1;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
-        }
-
-        .score-total {
-            font-size: 1.4em;
-            opacity: 0.9;
+            color: var(--primary-color);
+            margin: 20px 0;
         }
 
         .stars {
-            font-size: 3.5em;
-            color: #ffd700;
-            margin: 30px 0;
-            text-shadow: 0 2px 10px rgba(0,0,0,0.2);
-            animation: twinkle 2s infinite;
-        }
-
-        @keyframes twinkle {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.7; }
-        }
-
-        .result-message {
             font-size: 2em;
-            font-weight: 900;
-            color: var(--primary-color);
-            margin: 25px 0;
-            animation: slideIn 0.8s ease;
+            color: #ffd700;
+            margin: 15px 0;
         }
 
-        @keyframes slideIn {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .result-description {
-            font-size: 1.2em;
-            color: var(--dark-color);
-            max-width: 700px;
-            margin: 0 auto;
-            line-height: 1.8;
-            padding: 20px;
-            background: var(--light-color);
-            border-radius: var(--border-radius);
-            box-shadow: var(--shadow-sm);
-            animation: fadeIn 1s ease 0.5s both;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .sending-message {
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
             margin-top: 30px;
-            padding: 25px;
-            background: linear-gradient(135deg, #e8f5e9 0%, #ffffff 100%);
-            border-radius: var(--border-radius);
-            color: #2e7d32;
-            font-weight: 700;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            border-right: 5px solid var(--success-color);
-            animation: pulse 2s infinite;
         }
 
-        .countdown-timer {
-            font-size: 1.4em;
-            font-weight: 900;
-            color: var(--danger-color);
-            margin: 25px 0;
-            padding: 15px 30px;
-            background: #ffebee;
+        .result-card {
+            background: white;
+            padding: 20px;
             border-radius: var(--border-radius);
-            display: inline-block;
+            border-left: 4px solid var(--primary-color);
             box-shadow: var(--shadow-sm);
-            animation: pulse 1s infinite;
-        }
-
-        .spinner {
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid var(--primary-color);
-            border-radius: 50%;
-            width: 35px;
-            height: 35px;
-            animation: spin 1s linear infinite;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .footer {
-            background: var(--light-color);
-            padding: 25px;
-            text-align: center;
-            color: var(--dark-color);
-            border-top: 3px solid var(--primary-color);
-            position: relative;
-        }
-
-        .footer::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 100%;
-            height: 3px;
-            background: var(--gradient-primary);
-            animation: progress 30s linear infinite;
-        }
-
-        @keyframes progress {
-            0% { transform: translateX(-100%); }
-            100% { transform: translateX(100%); }
-        }
-
-        .footer p {
-            margin: 10px 0;
-        }
-
-        .error-message {
-            color: var(--danger-color);
-            font-size: 0.9em;
-            margin-top: 8px;
-            display: none;
-            font-weight: 600;
-            animation: shake 0.5s ease;
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-5px); }
-            75% { transform: translateX(5px); }
-        }
-
-        .permission-request {
-            background: linear-gradient(135deg, #e3f2fd 0%, #ffffff 100%);
-            padding: 25px;
-            border-radius: var(--border-radius);
-            margin: 30px 0;
-            text-align: center;
-            border-right: 5px solid #2196f3;
-            animation: slideIn 0.8s ease;
-        }
-
-        .permission-icon {
-            font-size: 2.5em;
-            color: #2196f3;
-            margin-bottom: 20px;
-            animation: bounce 2s infinite;
-        }
-
-        .saved-data-badge {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: var(--success-color);
-            color: white;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            animation: slideInLeft 0.5s ease;
-        }
-
-        @keyframes slideInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        .clear-storage-btn {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            background: var(--danger-color);
-            color: white;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 20px;
-            cursor: pointer;
-            font-size: 0.9em;
-            font-weight: 600;
-            display: flex;
-            align-items: center;
-            gap: 5px;
             transition: all 0.3s ease;
         }
 
-        .clear-storage-btn:hover {
-            background: #c82333;
-            transform: scale(1.05);
+        .result-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-md);
         }
 
+        .result-card h4 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .result-card p {
+            color: #666;
+            font-size: 0.95em;
+            margin: 5px 0;
+        }
+
+        .result-value {
+            font-size: 1.5em;
+            font-weight: 900;
+            color: var(--primary-color);
+            margin-top: 10px;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%;
+            height: 400px;
+            margin: 30px 0;
+            background: white;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .previous-results {
+            margin-top: 30px;
+        }
+
+        .previous-results h3 {
+            color: var(--primary-color);
+            margin-bottom: 20px;
+            font-size: 1.3em;
+        }
+
+        .results-timeline {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .result-item {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            border-right: 4px solid var(--primary-color);
+            box-shadow: var(--shadow-sm);
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .result-item:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .result-date {
+            font-size: 0.85em;
+            color: #999;
+            margin-bottom: 10px;
+        }
+
+        .result-score {
+            font-size: 1.8em;
+            font-weight: 900;
+            color: var(--primary-color);
+            margin: 10px 0;
+        }
+
+        .result-stars {
+            font-size: 1.2em;
+            color: #ffd700;
+            margin: 10px 0;
+        }
+
+        .progress-analysis {
+            background: linear-gradient(135deg, #e8f5e9 0%, #f1f8e9 100%);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--success-color);
+            margin-top: 20px;
+        }
+
+        .progress-analysis h4 {
+            color: var(--success-color);
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .progress-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px 0;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+        }
+
+        .progress-item:last-child {
+            border-bottom: none;
+        }
+
+        .progress-label {
+            color: #333;
+            font-weight: 600;
+        }
+
+        .progress-value {
+            color: var(--success-color);
+            font-weight: 900;
+            font-size: 1.1em;
+        }
+
+        .progress-value.negative {
+            color: var(--danger-color);
+        }
+
+        .admin-panel {
+            background: linear-gradient(135deg, #f3e5f5 0%, #ede7f6 100%);
+            padding: 25px;
+            border-radius: var(--border-radius);
+            margin-top: 30px;
+            border-left: 4px solid #9c27b0;
+        }
+
+        .admin-panel h3 {
+            color: #7b1fa2;
+            margin-bottom: 20px;
+            font-size: 1.3em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .admin-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+
+        .admin-stat {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .admin-stat-value {
+            font-size: 2em;
+            font-weight: 900;
+            color: #7b1fa2;
+            margin: 10px 0;
+        }
+
+        .admin-stat-label {
+            color: #666;
+            font-size: 0.9em;
+        }
+
+        .share-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .success-message {
+            background: #d4edda;
+            color: #155724;
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            border-left: 4px solid var(--success-color);
+        }
+
+        .countdown-timer {
+            background: linear-gradient(135deg, #fff3cd 0%, #ffecb5 100%);
+            padding: 15px;
+            border-radius: var(--border-radius);
+            margin: 20px 0;
+            border-left: 4px solid #ffc107;
+            text-align: center;
+            font-size: 1.1em;
+            color: #856404;
+        }
+
+        .timer-display {
+            font-size: 1.5em;
+            font-weight: 900;
+            color: #d35400;
+            margin: 5px 0;
+        }
+
+        .complaint-success {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #e8f5e9 0%, #c8e6c9 100%);
+            border-radius: var(--border-radius);
+            border: 3px solid var(--success-color);
+        }
+
+        .complaint-success i {
+            font-size: 4em;
+            color: var(--success-color);
+            margin-bottom: 20px;
+        }
+
+        .complaint-success h3 {
+            color: var(--success-color);
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+
+        .complaint-success p {
+            font-size: 1.1em;
+            color: #333;
+            margin-bottom: 10px;
+        }
+
+        /* Responsive Design */
         @media (max-width: 768px) {
-            .content {
-                padding: 20px;
-            }
-
-            .header h1 {
-                font-size: 1.6em;
-            }
-
-            .logo {
-                max-width: 150px;
-            }
-
-            .btn {
-                width: 100%;
-                justify-content: center;
-            }
-
-            .button-group {
-                flex-direction: column-reverse;
-            }
-
-            .btn-secondary {
-                margin-left: 0;
-            }
-
-            .score-circle {
-                width: 200px;
-                height: 200px;
-            }
-
-            .score-circle::before {
-                width: 180px;
-                height: 180px;
-            }
-
-            .score-number {
-                font-size: 3em;
-            }
-
-            .user-type-selector {
-                grid-template-columns: 1fr;
-            }
-
-            .answer-options {
-                grid-template-columns: 1fr;
-            }
+            .header h1 { font-size: 1.5em; }
+            .header p { font-size: 1em; }
+            .content { padding: 20px 15px; }
+            .user-type-section { grid-template-columns: 1fr; }
+            .answer-options { grid-template-columns: 1fr; }
+            .results-grid { grid-template-columns: 1fr; }
+            .results-timeline { grid-template-columns: 1fr; }
+            .button-group { flex-direction: column; }
+            .btn { width: 100%; }
+            .chart-container { height: 300px; }
+            .question-text { font-size: 1em; }
+            .logo { max-width: 120px; }
         }
+
+        @media (max-width: 480px) {
+            body { padding: 10px; }
+            .container { border-radius: 10px; }
+            .header { padding: 20px 15px; }
+            .header h1 { font-size: 1.3em; }
+            .content { padding: 15px 10px; }
+            .question-container { padding: 15px; margin-bottom: 15px; }
+            .score-display { font-size: 2.5em; }
+            .form-group input, .form-group select, .form-group textarea { padding: 10px 12px; font-size: 16px; }
+            .admin-grid { grid-template-columns: 1fr; }
+            .share-buttons { flex-direction: column; }
+            .btn { min-width: auto; }
+        }
+
+        @media print {
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; max-width: 100%; }
+            .button-group, .btn, .admin-panel { display: none; }
+            .results-container { page-break-inside: avoid; }
+        }
+    /* Tea Bag with Logo - Transparent Background */
+.tea-bag {
+    position: absolute;
+    width: 60px;
+    height: 80px;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    animation: dunkTea 2s ease-in-out infinite;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    border-radius: 8px 8px 15px 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    z-index: 10;
+    background: transparent; /* خلفية شفافة */
+    border: 2px solid rgba(255, 255, 255, 0.8); /* حد شبه شفاف */
+    transition: all 0.3s ease;
+}
+
+.tea-bag::before {
+    content: '';
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 25px;
+    background: linear-gradient(to top, #fff 0%, #f0f0f0 100%);
+    z-index: 1;
+    box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+}
+
+.tea-bag::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, 
+        rgba(139, 69, 19, 0.1) 0%, 
+        rgba(160, 82, 45, 0.1) 30%, 
+        rgba(210, 105, 30, 0.1) 100%);
+    border-radius: 8px 8px 15px 15px;
+    z-index: -1;
+    backdrop-filter: blur(2px);
+}
+
+.tea-bag img {
+    width: 85%;
+    height: 85%;
+    object-fit: contain;
+    border-radius: 5px;
+    transition: all 0.5s ease;
+    filter: 
+        drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4))
+        brightness(1.1)  /* زيادة الإضاءة */
+        contrast(1.1);   /* زيادة التباين */
+    animation: logoPulse 2s ease-in-out infinite alternate;
+    background-color: transparent !important; /* خلفية شفافة للصورة */
+    mix-blend-mode: multiply; /* مزج الألوان مع الخلفية */
+}
+
+.tea-bag:hover img {
+    transform: scale(1.1) rotate(5deg);
+    filter: 
+        drop-shadow(0 4px 8px rgba(0, 0, 0, 0.6))
+        brightness(1.2)
+        contrast(1.2);
+}
+
+.tea-bag:hover {
+    background: rgba(139, 69, 19, 0.05); /* خلفية شفافة جداً عند hover */
+    border-color: rgba(255, 255, 255, 0.9);
+    box-shadow: 
+        0 4px 12px rgba(0, 0, 0, 0.3),
+        0 0 15px rgba(255, 255, 255, 0.3);
+}
+
+@keyframes logoPulse {
+    0% {
+        transform: scale(1);
+        filter: 
+            drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4))
+            brightness(1.05)
+            contrast(1.05);
+    }
+    100% {
+        transform: scale(1.05);
+        filter: 
+            drop-shadow(0 3px 6px rgba(0, 0, 0, 0.5))
+            brightness(1.15)
+            contrast(1.15);
+    }
+}
+
+/* حل بديل إذا كانت الصورة لا تزال تظهر بخلفية بيضاء */
+/* استخدم فئة خاصة للصورة */
+.tea-bag-logo {
+    width: 85%;
+    height: 85%;
+    object-fit: contain;
+    border-radius: 5px;
+    transition: all 0.5s ease;
+    filter: 
+        drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4))
+        brightness(1.1)
+        contrast(1.1);
+    animation: logoPulse 2s ease-in-out infinite alternate;
+    background-color: transparent !important;
+    mix-blend-mode: multiply;
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+    -webkit-transform: translateZ(0);
+    transform: translateZ(0);
+}
+
+/* حل إضافي: إضافة سمة للصورة مباشرة في HTML */
+img[src*="tea.png"] {
+    background-color: transparent !important;
+    background: transparent !important;
+}
+
+/* إذا كانت الصورة PNG مع خلفية بيضاء، يمكننا استخدام filter لإزالتها */
+.tea-bag img.tea-logo {
+    filter: 
+        drop-shadow(0 2px 4px rgba(0, 0, 0, 0.4))
+        brightness(1.1)
+        contrast(1.1)
+        invert(0%); /* لا يوجد عكس */
+}
+
+/* أو استخدام blend-mode مختلف */
+.tea-bag img {
+    mix-blend-mode: normal; /* جرب normal, multiply, screen, overlay */
+}
+
+/* حل نهائي: استبدال الصورة بخلفية شفافة تماماً */
+.tea-bag-logo-container {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+}
+
+.tea-bag-logo-container img {
+    max-width: 100%;
+    max-height: 100%;
+    background: transparent;
+    background-color: transparent !important;
+}
     </style>
 </head>
 <body>
-    <!-- Floating Background Elements -->
+    <!-- Loading Page -->
+        <!-- Loading Page -->
+    <div class="loading-page" id="loadingPage">
+        <div class="tea-cup-container">
+    <div class="tea-cup">
+        <div class="steam"></div>
+        <div class="steam"></div>
+        <div class="steam"></div>
+    </div>
+    <div class="tea-bag">
+        <div class="tea-bag-logo-container">
+            <img src="tea.png" alt="شركة باعشن" class="tea-logo tea-bag-logo">
+        </div>
+    </div>
+</div>
+        
+    </div>
+
+    <!-- Floating Elements -->
     <div class="floating-elements">
         <div class="floating-element"></div>
         <div class="floating-element"></div>
@@ -959,6 +1122,10 @@
         <div class="floating-element"></div>
     </div>
 
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Header -->
+        
     <div class="container">
         <div class="header">
             <div class="logo-container">
@@ -968,119 +1135,124 @@
             <p>شركة أحمد محمد صالح باعشن وشركاه - جودة متفوقة منذ 1965</p>
         </div>
 
+        <!-- Content -->
         <div class="content">
-            <!-- Products Banner -->
-            <div class="products-banner">
-                <img src="شاى.jpeg" alt="منتجات شاي ربيع">
-            </div>
-
-            <!-- User Type Selection -->
-            <div id="userTypeSection" class="form-section active">
-                <h2 style="color: var(--primary-color); margin-bottom: 25px; font-size: 2em; text-align: center; text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">
-                    <i class="fas fa-users"></i> اختر نوع التقييم
+            <!-- User Type Selection Section -->
+            <div class="form-section active" id="userTypeSection">
+                <h2 style="color: var(--primary-color); margin-bottom: 30px; text-align: center;">
+                    <i class="fas fa-list-alt"></i> اختر الخدمة المطلوبة
                 </h2>
                 
-                <div class="user-type-selector">
-                    <div class="user-type-card" onclick="selectUserType('engineer')" id="engineerCard">
-                        <div class="user-type-icon">
-                            <i class="fas fa-user-tie"></i>
-                        </div>
-                        <div class="user-type-title">مهندس الجودة</div>
-                        <div class="user-type-desc">تقييم المعرفة بأنظمة الجودة المتقدمة وسلامة الغذاء وفق معايير ISO و HACCP</div>
+                <div class="user-type-section">
+                    <!-- بطاقة اختبار عامل الإنتاج -->
+                    <div class="user-type-card" id="workerCard" onclick="selectService('test')">
+                        <i class="fas fa-tasks"></i>
+                        <h3>اختبار الجودة</h3>
+                        <p>اختبار متخصص لعمال الإنتاج والتشغيل</p>
                     </div>
                     
-                    <div class="user-type-card" onclick="selectUserType('worker')" id="workerCard">
-                        <div class="user-type-icon">
-                            <i class="fas fa-hard-hat"></i>
-                        </div>
-                        <div class="user-type-title">عامل الإنتاج</div>
-                        <div class="user-type-desc">تقييم الالتزام بتعليمات دخول صالة الإنتاج وممارسات السلامة الغذائية</div>
+                    <!-- بطاقة الشكاوى والمقترحات -->
+                    <div class="user-type-card" id="complaintCard" onclick="selectService('complaint')">
+                        <i class="fas fa-comments"></i>
+                        <h3>الشكاوى والمقترحات</h3>
+                        <p>أرسل شكواك أو مقترحاتك للإدارة</p>
                     </div>
                 </div>
 
-                <div id="savedDataIndicator" class="saved-data-badge" style="display: none;">
-                    <i class="fas fa-save"></i> بيانات مخزنة
-                </div>
-
-                <div class="center-button">
-                    <button class="btn btn-primary" onclick="proceedToUserInfo()" id="proceedBtn" disabled>
-                        <i class="fas fa-arrow-left"></i> المتابعة إلى المعلومات
+                <div class="button-group">
+                    <button class="btn btn-primary" id="proceedBtn" onclick="proceedToNextSection()" disabled>
+                        <i class="fas fa-arrow-left"></i> المتابعة
                     </button>
                 </div>
             </div>
 
             <!-- User Information Section -->
-
-             <div id="userInfoSection" class="form-section">
-              <!--    <button class="clear-storage-btn" onclick="clearLocalStorage()">
-                    <i class="fas fa-trash-alt"></i> مسح البيانات المخزنة
-                </button> -->
-                
-                <h2 style="color: var(--primary-color); margin-bottom: 25px; font-size: 2em;">
-                    <i class="fas fa-user-circle"></i> المعلومات الشخصية
+            <div class="form-section" id="userInfoSection">
+                <h2 style="color: var(--primary-color); margin-bottom: 30px; text-align: center;">
+                    <i class="fas fa-user"></i> بيانات المستخدم
                 </h2>
-                
+
                 <div class="form-group">
-                    <label for="userName"><i class="fas fa-user"></i> الاسم الكامل *</label>
-                    <input type="text" id="userName" placeholder="أدخل الاسم الكامل" required>
+                    <label for="userName"><i class="fas fa-user"></i> الاسم الكامل</label>
+                    <input type="text" id="userName" placeholder="أدخل اسمك الكامل">
                     <div class="error-message" id="nameError">الرجاء إدخال الاسم</div>
                 </div>
 
                 <div class="form-group">
-                    <label for="userEmail"><i class="fas fa-envelope"></i> البريد الإلكتروني *</label>
-                    <input type="email" id="userEmail" placeholder="example@domain.com" required>
+                    <label for="userEmail"><i class="fas fa-envelope"></i> البريد الإلكتروني</label>
+                    <input type="email" id="userEmail" placeholder="example@company.com">
                     <div class="error-message" id="emailError">الرجاء إدخال بريد إلكتروني صحيح</div>
                 </div>
 
                 <div class="form-group">
-                    <label for="userPhone"><i class="fas fa-phone"></i> رقم الهاتف *</label>
-                    <input type="tel" id="userPhone" placeholder="01XXXXXXXXX" required>
-                    <div class="error-message" id="phoneError">الرجاء إدخال رقم هاتف صحيح</div>
+                    <label for="userPhone"><i class="fas fa-phone"></i> رقم الهاتف</label>
+                    <input type="tel" id="userPhone" placeholder="01XXXXXXXXX">
+                    <div class="error-message" id="phoneError">الرجاء إدخال رقم هاتف صحيح (01XXXXXXXXX)</div>
                 </div>
 
                 <div class="form-group">
-                    <label for="userDepartment"><i class="fas fa-building"></i> القسم / الإدارة *</label>
-                    <input type="text" id="userDepartment" placeholder="القسم أو الإدارة التابع لها" required>
-                    <div class="error-message" id="deptError">الرجاء إدخال القسم</div>
-                </div>
-
-                <div class="form-group">
-                    <label for="userPosition"><i class="fas fa-briefcase"></i> المسمى الوظيفي *</label>
-                    <select id="userPosition" required>
-                        <option value="">اختر المسمى الوظيفي</option>
-                        <option value="مهندس جودة" id="engineerOption">مهندس جودة</option>
-                        <option value="مهندس جودة أول" id="engineerOption2">مهندس جودة أول</option>
-                        <option value="مشرف جودة" id="engineerOption3">مشرف جودة</option>
-                        <option value="مدير جودة" id="engineerOption4">مدير جودة</option>
-                        <option value="عامل إنتاج" id="workerOption">عامل إنتاج</option>
-                        <option value="مشغل آلات" id="workerOption2">مشغل آلات</option>
-                        <option value="فني إنتاج" id="workerOption3">فني إنتاج</option>
-                        <option value="مشرف إنتاج" id="workerOption4">مشرف إنتاج</option>
-                        <option value="أخرى" id="otherOption">أخرى</option>
+                    <label for="userDepartment"><i class="fas fa-building"></i> القسم</label>
+                    <select id="userDepartment">
+                        <option value="">اختر القسم</option>
+                        <option value="الإنتاج">الإنتاج</option>
+                        <option value="الجودة">الجودة</option>
+                        <option value="الصيانة">الصيانة</option>
+                        <option value="المخازن">المخازن</option>
+                        <option value="التعبئة">التعبئة</option>
+                        <option value="أخرى">أخرى</option>
                     </select>
-                    <div class="error-message" id="positionError">الرجاء اختيار المسمى الوظيفي</div>
+                    <div class="error-message" id="deptError">الرجاء اختيار القسم</div>
                 </div>
 
                 <div class="form-group">
-                    <label for="userExperience"><i class="fas fa-calendar-alt"></i> سنوات الخبرة</label>
-                    <input type="number" id="userExperience" placeholder="عدد سنوات الخبرة" min="0" max="50">
+                    <label for="userPosition"><i class="fas fa-briefcase"></i> الوظيفة</label>
+                    <select id="userPosition">
+                        <option value="">اختر الوظيفة</option>
+                        <option value="عامل إنتاج">عامل إنتاج</option>
+                        <option value="عامل تجميع">عامل تجميع</option>
+                        <option value="عامل فحص">عامل فحص</option>
+                        <option value="عامل تعبئة">عامل تعبئة</option>
+                        <option value="مشرف">مشرف</option>
+                        <option value="فني">فني</option>
+                        <option value="أخرى">أخرى</option>
+                    </select>
+                    <div class="error-message" id="positionError">الرجاء اختيار الوظيفة</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="userExperience"><i class="fas fa-clock"></i> سنوات الخبرة</label>
+                    <select id="userExperience">
+                        <option value="">اختر سنوات الخبرة</option>
+                        <option value="أقل من سنة">أقل من سنة</option>
+                        <option value="1-3 سنوات">1-3 سنوات</option>
+                        <option value="3-5 سنوات">3-5 سنوات</option>
+                        <option value="5-10 سنوات">5-10 سنوات</option>
+                        <option value="أكثر من 10 سنوات">أكثر من 10 سنوات</option>
+                    </select>
+                </div>
+
+                <div id="savedDataIndicator" style="display: none;" class="success-message">
+                    <i class="fas fa-check-circle"></i> تم تحميل بيانات المستخدم السابقة بنجاح
                 </div>
 
                 <div class="button-group">
-                    <button class="btn btn-secondary" onclick="backToUserType()">
+                    <button class="btn btn-secondary" onclick="backToServiceSelection()">
                         <i class="fas fa-arrow-right"></i> رجوع
                     </button>
-                    <button class="btn btn-primary" onclick="startQuiz()">
-                        <i class="fas fa-play-circle"></i> بدء الاختبار
+                    <button class="btn btn-primary" onclick="proceedBasedOnService()">
+                        <i class="fas fa-play"></i> متابعة
                     </button>
                 </div>
             </div>
 
             <!-- Quiz Section -->
-            <div id="quizSection" class="form-section">
-                <div class="progress-text" id="progressText">السؤال 1 من 10</div>
+            <div class="form-section" id="quizSection">
                 <div class="progress-bar">
-                    <div class="progress-fill" id="progressFill" style="width: 10%"></div>
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+
+                <div style="text-align: center; margin-bottom: 20px; color: #666;">
+                    <span id="questionCounter">1</span> من <span id="totalQuestions">15</span>
                 </div>
 
                 <div id="questionContainer"></div>
@@ -1089,544 +1261,433 @@
                     <button class="btn btn-secondary" id="prevBtn" onclick="previousQuestion()" style="display: none;">
                         <i class="fas fa-arrow-right"></i> السؤال السابق
                     </button>
-                    <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()">
+                    <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>
                         <i class="fas fa-arrow-left"></i> السؤال التالي
                     </button>
                 </div>
             </div>
 
-            <!-- Results Section -->
-            <div id="resultsSection" class="form-section">
-                <div class="results-container">
-                    <h2 style="color: var(--primary-color); font-size: 2.2em; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.1);">
-                        <i class="fas fa-trophy"></i> نتيجة التقييم
-                    </h2>
-                    
-                    <div class="permission-request" id="permissionRequest" style="display: none;">
-                        <div class="permission-icon">
-                            <i class="fas fa-shield-alt"></i>
-                        </div>
-                        <h3>طلب إذن الوصول إلى WhatsApp</h3>
-                        <p>لإرسال النتائج تلقائيًا، يرجى منح الإذن للوصول إلى WhatsApp عند ظهور نافذة التأكيد.</p>
-                        <p>سيتم الإرسال التلقائي خلال 5 ثواني إذا لم تقم بالإلغاء.</p>
-                    </div>
-                    
-                    <div class="score-circle">
-                        <div class="score-circle-content">
-                            <div class="score-number" id="scoreNumber">0</div>
-                            <div class="score-total">من 10</div>
-                        </div>
-                    </div>
+            <!-- Complaint Section -->
+            <div class="form-section" id="complaintSection">
+                <h2 style="color: var(--primary-color); margin-bottom: 30px; text-align: center;">
+                    <i class="fas fa-comment-dots"></i> الشكاوى والمقترحات
+                </h2>
 
-                    <div class="stars" id="starsDisplay"></div>
+                <div class="form-group">
+                    <label for="complaintType"><i class="fas fa-tag"></i> نوع الرسالة</label>
+                    <select id="complaintType">
+                        <option value="">اختر نوع الرسالة</option>
+                        <option value="شكوى">شكوى</option>
+                        <option value="اقتراح">اقتراح</option>
+                        <option value="استفسار">استفسار</option>
+                        <option value="تقييم">تقييم</option>
+                    </select>
+                    <div class="error-message" id="typeError">الرجاء اختيار نوع الرسالة</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="complaintTitle"><i class="fas fa-heading"></i> عنوان الرسالة</label>
+                    <input type="text" id="complaintTitle" placeholder="أدخل عنواناً مختصراً">
+                    <div class="error-message" id="titleError">الرجاء إدخال عنوان الرسالة</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="complaintMessage"><i class="fas fa-edit"></i> نص الرسالة</label>
+                    <textarea id="complaintMessage" placeholder="أدخل تفاصيل شكواك أو اقتراحك هنا..."></textarea>
+                    <div class="error-message" id="messageError">الرجاء إدخال نص الرسالة</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="complaintPriority"><i class="fas fa-exclamation-triangle"></i> الأولوية</label>
+                    <select id="complaintPriority">
+                        <option value="عادية">عادية</option>
+                        <option value="متوسطة">متوسطة</option>
+                        <option value="عالية">عالية</option>
+                        <option value="عاجلة">عاجلة</option>
+                    </select>
+                </div>
+
+                <div id="complaintSavedIndicator" style="display: none;" class="success-message">
+                    <i class="fas fa-history"></i> لديك مسودة سابقة محفوظة
+                </div>
+
+                <div class="button-group">
+                    <button class="btn btn-secondary" onclick="backToServiceSelection()">
+                        <i class="fas fa-arrow-right"></i> رجوع
+                    </button>
+                    <button class="btn btn-success" onclick="saveComplaintDraft()">
+                        <i class="fas fa-save"></i> حفظ مسودة
+                    </button>
+                    <button class="btn btn-whatsapp" onclick="sendComplaintViaWhatsApp()">
+                        <i class="fab fa-whatsapp"></i> إرسال عبر واتساب
+                    </button>
+                </div>
+            </div>
+
+            <!-- Complaint Success Section -->
+            <div class="form-section" id="complaintSuccessSection">
+                <div class="complaint-success">
+                    <i class="fas fa-check-circle"></i>
+                    <h3>تم إرسال رسالتك بنجاح!</h3>
+                    <p>شكراً لك على مشاركة شكواك/مقترحك معنا.</p>
+                    <p>سيتم مراجعة رسالتك من قبل الإدارة في أقرب وقت.</p>
+                    <p>رقم المرجع: <strong id="complaintReference">REF-2024-001</strong></p>
                     
-                    <div class="result-message" id="resultMessage"></div>
-                    
-                    <div class="result-description" id="resultDescription"></div>
-
-                    <div class="countdown-timer" id="countdownTimer" style="display: none;">
-                        الإرسال التلقائي خلال: <span id="countdown">5</span> ثانية
-                    </div>
-
-                    <div class="sending-message" id="sendingMessage" style="display: none;">
-                        <div class="spinner"></div>
-                        <span>جاري إرسال النتائج عبر WhatsApp...</span>
-                    </div>
-
-                    <div class="button-group" style="justify-content: center; margin-top: 40px;">
-                        <button class="btn btn-success" id="sendResultsBtn" onclick="sendResultsViaWhatsApp()">
-                            <i class="fab fa-whatsapp"></i> إرسال النتائج عبر WhatsApp
+                    <div class="button-group" style="margin-top: 30px;">
+                        <button class="btn btn-secondary" onclick="sendAnotherComplaint()">
+                            <i class="fas fa-plus"></i> إرسال رسالة أخرى
                         </button>
-                        <button class="btn btn-primary" onclick="restartQuiz()">
+                        <button class="btn btn-primary" onclick="goToServiceSelection()">
+                            <i class="fas fa-home"></i> الصفحة الرئيسية
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Section -->
+            <div class="form-section" id="resultsSection">
+                <div class="results-container">
+                    <div class="results-header">
+                        <h2><i class="fas fa-trophy"></i> نتائج الاختبار</h2>
+                        <p id="resultUserName" style="color: #666; margin-top: 10px;"></p>
+                    </div>
+
+                    <!-- Countdown Timer for Auto-Send -->
+                    <div id="countdownTimer" class="countdown-timer" style="display: none;">
+                        <i class="fas fa-clock"></i> سيتم إرسال النتائج تلقائياً عبر واتساب خلال:
+                        <div class="timer-display" id="timerDisplay">3 ثواني</div>
+                        <p style="font-size: 0.9em; margin-top: 5px;">يمكنك إلغاء الإرسال التلقائي بالضغط على أي زر</p>
+                    </div>
+
+                    <div style="text-align: center;">
+                        <div class="score-display" id="scoreDisplay">0/15</div>
+                        <div class="stars" id="starsDisplay"></div>
+                        <p id="scoreMessage" style="font-size: 1.2em; color: #666; margin-top: 20px;"></p>
+                    </div>
+
+                    <div class="results-grid">
+                        <div class="result-card">
+                            <h4><i class="fas fa-check-circle"></i> النتيجة</h4>
+                            <div class="result-value" id="finalScore">0</div>
+                            <p>من 15 نقطة</p>
+                        </div>
+                        <div class="result-card">
+                            <h4><i class="fas fa-percent"></i> النسبة المئوية</h4>
+                            <div class="result-value" id="percentageScore">0%</div>
+                            <p>من المجموع الكلي</p>
+                        </div>
+                        <div class="result-card">
+                            <h4><i class="fas fa-clock"></i> وقت الاختبار</h4>
+                            <div class="result-value" id="testDuration">0</div>
+                            <p>دقيقة</p>
+                        </div>
+                    </div>
+
+                    <!-- Progress Analysis -->
+                    <div id="progressAnalysisContainer" style="display: none;">
+                        <div class="progress-analysis">
+                            <h4><i class="fas fa-chart-line"></i> تحليل التقدم</h4>
+                            <div id="progressAnalysisContent"></div>
+                        </div>
+                    </div>
+
+                    <!-- Chart Container -->
+                    <div id="chartContainer" style="display: none;">
+                        <h3 style="color: var(--primary-color); margin-bottom: 20px; text-align: center;">
+                            <i class="fas fa-chart-bar"></i> رسم بياني للنتائج
+                        </h3>
+                        <div class="chart-container">
+                            <canvas id="resultsChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Previous Results -->
+                    <div id="previousResults" class="previous-results" style="display: none;">
+                        <h3><i class="fas fa-history"></i> السجل السابق</h3>
+                        <div class="results-timeline" id="previousResultsContainer"></div>
+                    </div>
+
+                    <!-- Admin Panel -->
+                    <div class="admin-panel">
+                        <h3><i class="fas fa-chart-pie"></i> لوحة الإحصائيات</h3>
+                        <div class="admin-grid">
+                            <div class="admin-stat">
+                                <div class="admin-stat-label">إجمالي الاختبارات</div>
+                                <div class="admin-stat-value" id="totalTests">0</div>
+                            </div>
+                            <div class="admin-stat">
+                                <div class="admin-stat-label">أفضل نتيجة</div>
+                                <div class="admin-stat-value" id="bestScore">0</div>
+                            </div>
+                            <div class="admin-stat">
+                                <div class="admin-stat-label">متوسط النتائج</div>
+                                <div class="admin-stat-value" id="averageScore">0</div>
+                            </div>
+                            <div class="admin-stat">
+                                <div class="admin-stat-label">معدل التحسن</div>
+                                <div class="admin-stat-value" id="improvementRate">0%</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Share Buttons -->
+                    <div class="share-buttons">
+                        <button class="btn btn-whatsapp" onclick="shareTestResultsViaWhatsApp()" id="whatsappBtn">
+                            <i class="fab fa-whatsapp"></i> إرسال النتائج عبر واتساب
+                        </button>
+                        <button class="btn btn-secondary" onclick="restartTest()">
                             <i class="fas fa-redo"></i> إعادة الاختبار
                         </button>
-                        <button class="btn btn-secondary" onclick="saveResults()">
-                            <i class="fas fa-save"></i> حفظ النتيجة
-                        </button>
                     </div>
 
-                    <div id="previousResults" style="margin-top: 40px; display: none;">
-                        <h3 style="color: var(--primary-color); margin-bottom: 20px;">
-                            <i class="fas fa-history"></i> نتائج سابقة
-                        </h3>
-                        <div id="resultsList" style="background: var(--light-color); padding: 20px; border-radius: var(--border-radius);"></div>
+                    <div class="button-group" style="margin-top: 30px;">
+                        <button class="btn btn-danger" onclick="clearAllData()">
+                            <i class="fas fa-trash"></i> حذف جميع البيانات
+                        </button>
                     </div>
                 </div>
             </div>
         </div>
-
-        <div class="footer">
-            <p><strong>شركة أحمد محمد صالح باعشن وشركاه</strong></p>
-            <p>نظام تقييم الجودة المتقدم - شاي ربيع</p>
-            <p>الجودة مسؤولية كل فرد في المنظمة</p>
-            <p style="margin-top: 10px; color: #999; font-size: 0.9em;">©Made by Eng.SAMIR MAGDY</p>
-        </div>
     </div>
 
+        
+        
+        
+        <!-- نسخة أبسط -->
+<footer style="
+    background: #2c5aa0;
+    color: white;
+    padding: 15px;
+    text-align: center;
+    font-family: Arial, sans-serif;
+    border-top: 3px solid #25D366;
+">
+    <div style="display: flex; justify-content: center; align-items: center; gap: 15px;">
+        <span style="font-size: 14px;">
+            Made by <strong>Eng SAMIR MAGDY</strong>
+        </span>
+        
+        <a href="https://samermagdy1.github.io/C-V/" 
+           target="_blank"
+           title="View Portfolio"
+           style="
+                display: inline-block;
+                width: 40px;
+                height: 40px;
+                background: #25D366;
+                border-radius: 50%;
+                color: white;
+                text-decoration: none;
+                text-align: center;
+                line-height: 40px;
+                animation: pulse 2s infinite;
+                position: relative;
+            ">
+            <i class="fas fa-external-link-alt"></i>
+        </a>
+    </div>
+    
+    <style>
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+        
+        a:hover {
+            animation-play-state: paused;
+            background: #20ba5a !important;
+        }
+    </style>
+</footer>
     <script>
-        // Quiz Data for Engineers
-        const engineerQuizData = [
-            {
-                question: "ما هو الـ HACCP؟ وما أهميته؟",
-                options: [
-                    "نظام لإدارة الموارد البشرية",
-                    "نظام تحليل المخاطر ونقاط التحكم الحرجة لضمان سلامة الغذاء",
-                    "نظام لإدارة المخزون",
-                    "نظام لمراقبة الجودة الشاملة"
-                ],
-                correctAnswer: 1,
-                explanation: "HACCP هو نظام وقائي يركز على منع المخاطر بدلاً من فحص المنتج النهائي فقط."
-            },
-            {
-                question: "ما الفرق بين CCP و CP؟",
-                options: [
-                    "لا يوجد فرق بينهما",
-                    "CCP نقطة تحكم حرجة قد تؤدي لخطر مباشر، CP نقطة تحكم عامة للجودة",
-                    "CCP للجودة فقط، CP للسلامة",
-                    "CCP أقل أهمية من CP"
-                ],
-                correctAnswer: 1,
-                explanation: "CCP تركز على السلامة بينما CP تركز على الجودة."
-            },
-            {
-                question: "ما أهم الملوثات البيولوجية في الأغذية؟",
-                options: [
-                    "المعادن الثقيلة والمواد الكيميائية",
-                    "الزجاج والبلاستيك",
-                    "البكتيريا مثل Salmonella و E.coli والفيروسات والفطريات",
-                    "الغبار والأتربة فقط"
-                ],
-                correctAnswer: 2,
-                explanation: "الملوثات البيولوجية هي الأكثر خطورة على الصحة العامة."
-            },
-            {
-                question: "ما هو معدل الحرارة المناسب لحفظ الأطعمة الباردة؟",
-                options: [
-                    "من -5 إلى 0 درجة مئوية",
-                    "من 0 إلى 5 درجات مئوية",
-                    "من 5 إلى 10 درجات مئوية",
-                    "من 10 إلى 15 درجة مئوية"
-                ],
-                correctAnswer: 1,
-                explanation: "درجة حرارة 0-5°C تبطئ نمو معظم البكتيريا المسببة للأمراض."
-            },
-            {
-                question: "ما معنى Cross Contamination (التلوث المتبادل)؟",
-                options: [
-                    "تلوث الغذاء بالمواد الكيميائية",
-                    "انتقال الملوثات من مادة ملوثة إلى أخرى سليمة",
-                    "تلوث الهواء في منطقة الإنتاج",
-                    "تلوث الماء المستخدم في التصنيع"
-                ],
-                correctAnswer: 1,
-                explanation: "يحدث التلوث المتبادل عند انتقال الميكروبات من سطح أو مادة إلى أخرى."
-            },
-            {
-                question: "ما الفرق بين Cleaning و Sanitizing؟",
-                options: [
-                    "لا يوجد فرق بينهما",
-                    "Cleaning للأرضيات فقط و Sanitizing للأسطح",
-                    "Cleaning إزالة الأوساخ و Sanitizing تقليل الميكروبات",
-                    "Cleaning أهم من Sanitizing"
-                ],
-                correctAnswer: 2,
-                explanation: "التنظيف يزيل الأوساخ المرئية بينما التعقيم يقتل الميكروبات."
-            },
-            {
-                question: "ما هي المواصفة ISO 22000؟",
-                options: [
-                    "مواصفة لإدارة البيئة",
-                    "مواصفة دولية لنظام إدارة سلامة الغذاء تدمج HACCP",
-                    "مواصفة لإدارة الجودة الشاملة",
-                    "مواصفة لإدارة الصحة والسلامة المهنية"
-                ],
-                correctAnswer: 1,
-                explanation: "ISO 22000 تجمع بين عناصر HACCP ومبادئ ISO 9001."
-            },
-            {
-                question: "كيف يتم التحقق من صلاحية جهاز الميزان في قسم الجودة؟",
-                options: [
-                    "بالنظر إليه فقط",
-                    "من خلال معايرة دورية باستخدام أوزان معيارية",
-                    "باستخدامه مرة واحدة يومياً",
-                    "لا يحتاج للتحقق"
-                ],
-                correctAnswer: 1,
-                explanation: "المعايرة الدورية تضمن دقة القياسات وموثوقية النتائج."
-            },
-            {
-                question: "ما هي أهم ممارسات الصحة الشخصية للعاملين (Personal Hygiene)؟",
-                options: [
-                    "ارتداء الزي الرسمي فقط",
-                    "غسل الأيدي بانتظام، ارتداء زي العمل، تغطية الشعر، تقليم الأظافر",
-                    "تغطية الرأس فقط",
-                    "غسل الأيدي مرة واحدة في اليوم"
-                ],
-                correctAnswer: 1,
-                explanation: "الصحة الشخصية هي خط الدفاع الأول ضد تلوث الغذاء."
-            },
-            {
-                question: "ما أهم أسباب فساد الأغذية؟",
-                options: [
-                    "اللون والطعم فقط",
-                    "النمو الميكروبي، الأكسدة، سوء التخزين، درجات الحرارة الخطرة (5-60°C)",
-                    "العبوات فقط",
-                    "وقت التصنيع فقط"
-                ],
-                correctAnswer: 1,
-                explanation: "منطقة الخطر الحراري (5-60°C) هي النطاق المثالي لنمو البكتيريا."
-            }
-        ];
-
-        // Quiz Data for Workers
-        const workerQuizData = [
-            {
-                question: "ما هو أول إجراء يجب القيام به قبل دخول صالة الإنتاج؟",
-                options: [
-                    "الذهاب مباشرة إلى مكان العمل",
-                    "إجراء الفحص الصحي والتأكد من عدم وجود أمراض معدية أو جروح مكشوفة",
-                    "تسجيل الحضور فقط",
-                    "شرب الماء قبل البدء"
-                ],
-                correctAnswer: 1,
-                explanation: "الفحص الصحي اليومي يمنع نقل الأمراض إلى المنتج الغذائي."
-            },
-            {
-                question: "ما الذي يجب إبلاغ المشرف به قبل الدخول إلى صالة الإنتاج؟",
-                options: [
-                    "أي تعب، حمى، قيء، إسهال، أو عدوى جلدية",
-                    "الرغبة في الحصول على إجازة",
-                    "مشاكل النقل الشخصية",
-                    "طلبات زيادة الراتب"
-                ],
-                correctAnswer: 0,
-                explanation: "الأعراض المرضية قد تشير إلى أمراض معدية تهدد سلامة الغذاء."
-            },
-            {
-                question: "ما هي متطلبات الأظافر قبل دخول صالة الإنتاج؟",
-                options: [
-                    "يجب أن تكون قصيرة وبدون طلاء أو مواد اصطناعية",
-                    "يمكن أن تكون طويلة إذا كانت نظيفة",
-                    "يجب أن تكون مطلية بلون فاتح فقط",
-                    "لا توجد متطلبات خاصة للأظافر"
-                ],
-                correctAnswer: 0,
-                explanation: "الأظافر الطويلة أو المطلية قد تحمل ميكروبات أو تتساقط في المنتج."
-            },
-            {
-                question: "ما هي الملابس والواقيات المطلوبة لدخول صالة الإنتاج؟",
-                options: [
-                    "الملابس الشخصية العادية",
-                    "زي العمل النظيف، غطاء رأس كامل، كمامة إذا لزم الأمر، قفازات، حذاء مخصص",
-                    "الزي الرسمي فقط",
-                    "أي ملابس بيضاء نظيفة"
-                ],
-                correctAnswer: 1,
-                explanation: "معدات الحماية الشخصية تحمي المنتج من التلوث والعامل من المخاطر."
-            },
-            {
-                question: "ما الذي يُمنع تمامًا ارتداؤه داخل صالة الإنتاج؟",
-                options: [
-                    "الإكسسوارات (خواتم، سلاسل، ساعات، حلق)",
-                    "النظارات الطبية",
-                    "الساعة الرقمية البلاستيكية",
-                    "الأحذية الرياضية البيضاء"
-                ],
-                correctAnswer: 0,
-                explanation: "الإكسسوارات قد تسقط في المنتج أو تحمل ميكروبات."
-            },
-            {
-                question: "ما هي السلوكيات الممنوعة داخل صالة الإنتاج؟",
-                options: [
-                    "الأكل أو الشرب أو التدخين",
-                    "التحدث مع الزملاء",
-                    "الاستماع للموسيقى من سماعات صغيرة",
-                    "جميع ما سبق"
-                ],
-                correctAnswer: 0,
-                explanation: "الأكل والشرب والتدخين قد يسبب تلوثاً للغذاء."
-            },
-            {
-                question: "ماذا يجب فعله في حال سقوط أي منتج أو أداة على الأرض؟",
-                options: [
-                    "إعادتها فورًا لخط الإنتاج",
-                    "التجاهل والمتابعة في العمل",
-                    "إبلاغ مشرف الجودة مباشرة وعدم إعادتها لخط الإنتاج",
-                    "التقاطها وغسلها بالماء فقط"
-                ],
-                correctAnswer: 2,
-                explanation: "المنتج الساقط على الأرض يعتبر ملوثاً ولا يمكن إعادته للإنتاج."
-            },
-            {
-                question: "ما الإجراء الصحيح عند العطس أو السعال داخل صالة الإنتاج؟",
-                options: [
-                    "العطس في اتجاه المنتج مباشرة",
-                    "تجنب مواجهة المنتج، تغيير القفازات وغسل اليدين فورًا",
-                    "العطس في الكمامة فقط",
-                    "الخروج من الصالة فورًا"
-                ],
-                correctAnswer: 1,
-                explanation: "العطس والسعال ينشران القطرات الملوثة التي قد تصل للمنتج."
-            },
-            {
-                question: "ماذا يجب على العامل بعد الانتهاء من العمل؟",
-                options: [
-                    "مغادرة الصالة مباشرة",
-                    "خلع معدات الحماية ووضعها في الأماكن المخصصة، ثم غسل اليدين",
-                    "ترك المعدات على مكان العمل",
-                    "التوجه مباشرة إلى غرفة الاستراحة"
-                ],
-                correctAnswer: 1,
-                explanation: "التنظيف بعد العمل يمنع انتقال الملوثات خارج منطقة الإنتاج."
-            },
-            {
-                question: "ما هي التعليمات الخاصة بالزوار داخل صالة الإنتاج؟",
-                options: [
-                    "الدخول بحرية دون قيود",
-                    "التجول بحرية داخل الصالة",
-                    "التسجيل في سجل الزوار، ارتداء كامل معدات الحماية، وعدم لمس أي معدات أو منتج",
-                    "الدخول بدون معدات حماية"
-                ],
-                correctAnswer: 2,
-                explanation: "الزوار غير المدربين يشكلون خطر تلوث محتمل للمنتج."
-            }
-        ];
-
-        // Application State
-        let userType = '';
+        // ========== VARIABLES ==========
+        let currentService = ''; // 'test' or 'complaint'
         let userData = {};
         let currentQuestion = 0;
-        let userAnswers = [];
         let score = 0;
+        let userAnswers = [];
         let quizData = [];
-        let countdownInterval = null;
-        let countdownSeconds = 5;
         let previousResults = [];
+        let testStartTime = 0;
+        let testEndTime = 0;
+        let autoSendTimer = null;
+        let countdown = 3;
+        let autoSendEnabled = true;
+        let complaintDraft = null;
 
-        // Initialize on load
-        document.addEventListener('DOMContentLoaded', function() {
-            checkSavedData();
+        // Worker Quiz Data - تعليمات دخول صالة الإنتاج (15 سؤالاً)
+        const workerQuizData = [
+            {
+                question: "أي مما يلي يعتبر من متطلبات النظافة الشخصية قبل دخول صالة الإنتاج؟",
+                options: ["عدم الحاجة للاستحمام", "استخدام العطور القوية", "الاستحمام، غسيل الأسنان، قص الأظافر والحلاقة"],
+                correct: 2
+            },
+            {
+                question: "ما هو الزي الصحيح قبل دخول الصالة؟",
+                options: ["أي ملابس عادية مناسبة", "بونيفورم نظيف + غطاء رأس + غطاء ذقن + كمامة (حسب الحاجة) + أحذية مخصصة", "ارتداء القفازات فقط بدون باقي الزي"],
+                correct: 1
+            },
+            {
+                question: "ارتداء غطاء الرأس:",
+                options: ["اختياري حسب رغبة العامل", "إجباري دائماً", "فقط عند وجود تفتيش"],
+                correct: 1
+            },
+            {
+                question: "القفازات تستخدم:",
+                options: ["في جميع الأقسام حتى لو غير مطلوبة", "غير ضرورية", "حسب طبيعة العملية وتعليمات الجودة"],
+                correct: 2
+            },
+            {
+                question: "يجب غسل اليدين لمدة:",
+                options: ["10 ثوانٍ", "30 ثانية", "60 ثانية"],
+                correct: 1
+            },
+            {
+                question: "مما يلي مواد ممنوع دخولها الصالة:",
+                options: ["العملات المعدنية – المفاتيح – أدوات حادة غير مصرح بها", "الموبايل فقط", "المفاتيح فقط"],
+                correct: 0
+            },
+            {
+                question: "ما هو الصحيح؟",
+                options: ["مسموح بوضع ميكياج خفيف", "مسموح بطلاء الأظافر", "ممنوع وضع أي مساحيق أو ميكياج أو طلاء أظافر أو رموش صناعية"],
+                correct: 2
+            },
+            {
+                question: "متطلب شكل الأظافر:",
+                options: ["يمكن أن تكون طويلة بشرط نظافتها", "قصيرة دائماً", "غير مهم طولها"],
+                correct: 1
+            },
+            {
+                question: "هل يسمح بوضع العطور؟",
+                options: ["نعم", "حسب نوع العطر", "لا"],
+                correct: 2
+            },
+            {
+                question: "عند حدوث تلوث أو انسكاب أو كسر زجاج:",
+                options: ["تجاهل الأمر", "تنظيف المشكلة بنفسك", "إبلاغ المشرف فوراً"],
+                correct: 2
+            },
+            {
+                question: "المخلفات توضع في:",
+                options: ["أي مكان", "سلان (صناديق/حاويات) مخصصة فقط", "خارج الصالة"],
+                correct: 1
+            },
+            {
+                question: "يجب تغيير الجوانتي (القفازات) عندما:",
+                options: ["يحدث قطع أو يتلوث أو يلمس سطح خارج منطقة العمل", "كل يوم مرة واحدة", "فقط عند طلب المشرف"],
+                correct: 0
+            },
+            {
+                question: "أي مما يلي يمنع دخول العامل إلى الصالة؟",
+                options: ["إسهال - قيء - إفرازات الأنف أو الأذن - اصفرار العين - أمراض جلدية", "الصداع فقط", "الإرهاق"],
+                correct: 0
+            },
+            {
+                question: "الدخول والخروج يتم عن طريق:",
+                options: ["أي باب متاح", "الأبواب المخصصة فقط", "بوابة المخزن"],
+                correct: 1
+            },
+            {
+                question: "خلال العمل يجب:",
+                options: ["خلع غطاء الرأس عند الشعور بالحر", "ارتداء الزي فقط عند وجود تفتيش", "الالتزام بالزي الكامل طوال مدة العمل دون تعديل"],
+                correct: 2
+            }
+        ];
+
+        // ========== INITIALIZATION ==========
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                document.getElementById('loadingPage').classList.add('hidden');
+            }, 2000);
+
+            loadUserData();
             loadPreviousResults();
+            loadComplaintDraft();
+            
+            // تعبئة بيانات المستخدم إذا كانت محفوظة
+            fillUserDataIfSaved();
         });
 
-        // Check for saved user data
-        function checkSavedData() {
-            const savedUserData = localStorage.getItem('qualityAssessmentUserData');
-            const savedUserType = localStorage.getItem('qualityAssessmentUserType');
-            
-            if (savedUserData && savedUserType) {
-                try {
-                    userData = JSON.parse(savedUserData);
-                    userType = savedUserType;
-                    
-                    // Show saved data indicator
-                    document.getElementById('savedDataIndicator').style.display = 'flex';
-                    
-                    // Update UI based on saved data
-                    updateUserTypeUI();
-                    
-                    // Auto-fill user info form
-                    fillUserInfoForm();
-                    
-                } catch (e) {
-                    console.error('Error loading saved data:', e);
-                }
+        // ========== LOAD DATA FROM LOCALSTORAGE ==========
+        function loadUserData() {
+            const saved = localStorage.getItem('qualityAssessmentUserData');
+            if (saved) {
+                userData = JSON.parse(saved);
             }
         }
 
-        // Update user type UI based on saved data
-        function updateUserTypeUI() {
-            if (userType === 'engineer') {
-                document.getElementById('engineerCard').classList.add('selected');
-                document.getElementById('proceedBtn').innerHTML = '<i class="fas fa-arrow-left"></i> المتابعة كـ مهندس جودة';
-                document.getElementById('proceedBtn').disabled = false;
-            } else if (userType === 'worker') {
-                document.getElementById('workerCard').classList.add('selected');
-                document.getElementById('proceedBtn').innerHTML = '<i class="fas fa-arrow-left"></i> المتابعة كـ عامل إنتاج';
-                document.getElementById('proceedBtn').disabled = false;
-            }
-        }
-
-        // Fill user info form with saved data
-        function fillUserInfoForm() {
-            if (userData.name) document.getElementById('userName').value = userData.name;
-            if (userData.email) document.getElementById('userEmail').value = userData.email;
-            if (userData.phone) document.getElementById('userPhone').value = userData.phone;
-            if (userData.department) document.getElementById('userDepartment').value = userData.department;
-            if (userData.position) document.getElementById('userPosition').value = userData.position;
-            if (userData.experience) document.getElementById('userExperience').value = userData.experience;
-        }
-
-        // Load previous results from localStorage
         function loadPreviousResults() {
-            const savedResults = localStorage.getItem('qualityAssessmentResults');
-            if (savedResults) {
-                try {
-                    previousResults = JSON.parse(savedResults);
-                    if (previousResults.length > 0) {
-                        displayPreviousResults();
-                    }
-                } catch (e) {
-                    console.error('Error loading previous results:', e);
+            const saved = localStorage.getItem('qualityAssessmentResults');
+            if (saved) {
+                previousResults = JSON.parse(saved);
+            }
+        }
+
+        function loadComplaintDraft() {
+            const saved = localStorage.getItem('qualityComplaintDraft');
+            if (saved) {
+                complaintDraft = JSON.parse(saved);
+            }
+        }
+
+        function fillUserDataIfSaved() {
+            if (userData.name) {
+                document.getElementById('userName').value = userData.name || '';
+                document.getElementById('userEmail').value = userData.email || '';
+                document.getElementById('userPhone').value = userData.phone || '';
+                document.getElementById('userDepartment').value = userData.department || '';
+                document.getElementById('userPosition').value = userData.position || '';
+                document.getElementById('userExperience').value = userData.experience || '';
+                
+                if (userData.name) {
+                    document.getElementById('savedDataIndicator').style.display = 'block';
                 }
             }
         }
 
-        // Display previous results
-        function displayPreviousResults() {
-            const container = document.getElementById('resultsList');
-            const previousResultsDiv = document.getElementById('previousResults');
+        // ========== SERVICE SELECTION ==========
+        function selectService(service) {
+            currentService = service;
             
-            if (previousResults.length === 0) {
-                previousResultsDiv.style.display = 'none';
-                return;
-            }
-            
-            let html = '<div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px;">';
-            
-            previousResults.slice(0, 5).forEach((result, index) => {
-                const percentage = (result.score / 10) * 100;
-                let starRating = '';
-                
-                if (percentage >= 90) starRating = '⭐⭐⭐⭐⭐';
-                else if (percentage >= 70) starRating = '⭐⭐⭐⭐';
-                else if (percentage >= 50) starRating = '⭐⭐⭐';
-                else if (percentage >= 30) starRating = '⭐⭐';
-                else starRating = '⭐';
-                
-                html += `
-                    <div style="background: white; padding: 15px; border-radius: 10px; box-shadow: 0 3px 10px rgba(0,0,0,0.1);">
-                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                            <strong style="color: var(--primary-color);">${result.testType === 'engineer' ? 'مهندس' : 'عامل'}</strong>
-                            <span style="font-size: 0.9em; color: #666;">${result.date}</span>
-                        </div>
-                        <div style="font-size: 1.5em; font-weight: bold; color: var(--primary-color);">
-                            ${result.score}/10
-                        </div>
-                        <div style="margin: 10px 0; color: #ffd700; font-size: 1.2em;">
-                            ${starRating}
-                        </div>
-                        <div style="font-size: 0.9em; color: #666;">
-                            ${result.name}
-                        </div>
-                    </div>
-                `;
-            });
-            
-            html += '</div>';
-            container.innerHTML = html;
-            previousResultsDiv.style.display = 'block';
-        }
-
-        // Save current results
-        function saveResults() {
-            const result = {
-                name: userData.name,
-                testType: userType,
-                score: score,
-                date: new Date().toLocaleDateString('ar-SA'),
-                timestamp: new Date().getTime()
-            };
-            
-            // Add to previous results
-            previousResults.unshift(result);
-            
-            // Keep only last 10 results
-            if (previousResults.length > 10) {
-                previousResults = previousResults.slice(0, 10);
-            }
-            
-            // Save to localStorage
-            localStorage.setItem('qualityAssessmentResults', JSON.stringify(previousResults));
-            
-            // Update display
-            displayPreviousResults();
-            
-            // Show confirmation
-            alert('تم حفظ النتيجة بنجاح في سجلك الشخصي!');
-        }
-
-        // Select User Type
-        function selectUserType(type) {
-            userType = type;
-            
-            // Update UI
-            document.getElementById('engineerCard').classList.remove('selected');
             document.getElementById('workerCard').classList.remove('selected');
+            document.getElementById('complaintCard').classList.remove('selected');
             
-            if (type === 'engineer') {
-                document.getElementById('engineerCard').classList.add('selected');
-                document.getElementById('proceedBtn').innerHTML = '<i class="fas fa-arrow-left"></i> المتابعة كـ مهندس جودة';
-            } else {
+            if (service === 'test') {
                 document.getElementById('workerCard').classList.add('selected');
-                document.getElementById('proceedBtn').innerHTML = '<i class="fas fa-arrow-left"></i> المتابعة كـ عامل إنتاج';
+                document.getElementById('proceedBtn').innerHTML = '<i class="fas fa-arrow-left"></i> بدء اختبار الجودة';
+            } else {
+                document.getElementById('complaintCard').classList.add('selected');
+                document.getElementById('proceedBtn').innerHTML = '<i class="fas fa-arrow-left"></i> إرسال شكوى/مقترح';
             }
             
             document.getElementById('proceedBtn').disabled = false;
-            
-            // Save user type preference
-            localStorage.setItem('qualityAssessmentUserType', userType);
         }
 
-        // Proceed to User Info
-        function proceedToUserInfo() {
-            if (!userType) return;
+        function proceedToNextSection() {
+            if (!currentService) return;
             
             document.getElementById('userTypeSection').classList.remove('active');
             document.getElementById('userInfoSection').classList.add('active');
-            
-            // Update position options based on user type
-            if (userType === 'engineer') {
-                document.getElementById('engineerOption').style.display = 'block';
-                document.getElementById('engineerOption2').style.display = 'block';
-                document.getElementById('engineerOption3').style.display = 'block';
-                document.getElementById('engineerOption4').style.display = 'block';
-                document.getElementById('workerOption').style.display = 'none';
-                document.getElementById('workerOption2').style.display = 'none';
-                document.getElementById('workerOption3').style.display = 'none';
-                document.getElementById('workerOption4').style.display = 'none';
-                document.getElementById('otherOption').style.display = 'block';
-                
-                // Set default value for engineers
-                if (!userData.position) {
-                    document.getElementById('userPosition').value = 'مهندس جودة';
-                }
-            } else {
-                document.getElementById('engineerOption').style.display = 'none';
-                document.getElementById('engineerOption2').style.display = 'none';
-                document.getElementById('engineerOption3').style.display = 'none';
-                document.getElementById('engineerOption4').style.display = 'none';
-                document.getElementById('workerOption').style.display = 'block';
-                document.getElementById('workerOption2').style.display = 'block';
-                document.getElementById('workerOption3').style.display = 'block';
-                document.getElementById('workerOption4').style.display = 'block';
-                document.getElementById('otherOption').style.display = 'block';
-                
-                // Set default value for workers
-                if (!userData.position) {
-                    document.getElementById('userPosition').value = 'عامل إنتاج';
-                }
-            }
         }
 
-        // Back to User Type Selection
-        function backToUserType() {
+        function backToServiceSelection() {
             document.getElementById('userInfoSection').classList.remove('active');
+            document.getElementById('quizSection').classList.remove('active');
+            document.getElementById('complaintSection').classList.remove('active');
             document.getElementById('userTypeSection').classList.add('active');
         }
 
-        // Validate User Information
+        // ========== VALIDATION ==========
         function validateUserInfo() {
             let isValid = true;
             
             const name = document.getElementById('userName').value.trim();
             const email = document.getElementById('userEmail').value.trim();
             const phone = document.getElementById('userPhone').value.trim();
-            const department = document.getElementById('userDepartment').value.trim();
+            const department = document.getElementById('userDepartment').value;
             const position = document.getElementById('userPosition').value;
-            const experience = document.getElementById('userExperience').value;
 
-            // Reset errors
             document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
 
             if (!name) {
@@ -1663,58 +1724,33 @@
                     phone: phone,
                     department: department,
                     position: position,
-                    experience: experience || 'غير محدد',
-                    userType: userType,
+                    experience: document.getElementById('userExperience').value || 'غير محدد',
                     lastUpdated: new Date().toISOString()
                 };
                 
-                // Save user data to localStorage
                 localStorage.setItem('qualityAssessmentUserData', JSON.stringify(userData));
+                document.getElementById('savedDataIndicator').style.display = 'block';
             }
 
             return isValid;
         }
 
-        // Clear localStorage
-        function clearLocalStorage() {
-            if (confirm('هل تريد فعلاً حذف جميع البيانات المخزنة؟')) {
-                localStorage.removeItem('qualityAssessmentUserData');
-                localStorage.removeItem('qualityAssessmentUserType');
-                localStorage.removeItem('qualityAssessmentResults');
-                
-                // Reset state
-                userData = {};
-                userType = '';
-                previousResults = [];
-                
-                // Reset UI
-                document.getElementById('savedDataIndicator').style.display = 'none';
-                document.getElementById('previousResults').style.display = 'none';
-                
-                // Clear form
-                document.getElementById('userName').value = '';
-                document.getElementById('userEmail').value = '';
-                document.getElementById('userPhone').value = '';
-                document.getElementById('userDepartment').value = '';
-                document.getElementById('userPosition').value = '';
-                document.getElementById('userExperience').value = '';
-                
-                alert('تم حذف جميع البيانات المخزنة بنجاح!');
-            }
-        }
-
-        // Start Quiz
-        function startQuiz() {
+        // ========== PROCEED BASED ON SERVICE ==========
+        function proceedBasedOnService() {
             if (!validateUserInfo()) {
                 return;
             }
 
-            // Set quiz data based on user type
-            if (userType === 'engineer') {
-                quizData = engineerQuizData;
+            if (currentService === 'test') {
+                startTest();
             } else {
-                quizData = workerQuizData;
+                startComplaint();
             }
+        }
+
+        // ========== TEST FUNCTIONS ==========
+        function startTest() {
+            quizData = workerQuizData;
 
             document.getElementById('userInfoSection').classList.remove('active');
             document.getElementById('quizSection').classList.add('active');
@@ -1722,11 +1758,13 @@
             currentQuestion = 0;
             userAnswers = new Array(quizData.length).fill(null);
             score = 0;
+            testStartTime = Date.now();
             
+            document.getElementById('totalQuestions').textContent = quizData.length;
+            document.getElementById('nextBtn').disabled = true;
             displayQuestion();
         }
 
-        // Display Question
         function displayQuestion() {
             const question = quizData[currentQuestion];
             const container = document.getElementById('questionContainer');
@@ -1744,288 +1782,690 @@
                 const isSelected = userAnswers[currentQuestion] === index;
                 html += `
                     <div class="answer-option ${isSelected ? 'selected' : ''}" onclick="selectAnswer(${index})">
-                        <input type="radio" name="answer" id="option${index}" value="${index}" ${isSelected ? 'checked' : ''}>
-                        <label for="option${index}">${option}</label>
+                        ${option}
                     </div>
                 `;
             });
 
-            html += `
-                    </div>
-                </div>
-            `;
-
+            html += '</div></div>';
             container.innerHTML = html;
 
-            // Update progress
-            const progress = ((currentQuestion + 1) / quizData.length) * 100;
-            document.getElementById('progressFill').style.width = progress + '%';
-            document.getElementById('progressText').textContent = `السؤال ${currentQuestion + 1} من ${quizData.length}`;
-
-            // Update buttons
-            document.getElementById('prevBtn').style.display = currentQuestion > 0 ? 'inline-flex' : 'none';
-            
-            const nextBtn = document.getElementById('nextBtn');
-            if (currentQuestion === quizData.length - 1) {
-                nextBtn.innerHTML = '<i class="fas fa-check-circle"></i> إنهاء الاختبار والحصول على النتيجة';
-            } else {
-                nextBtn.innerHTML = '<i class="fas fa-arrow-left"></i> السؤال التالي';
-            }
+            updateProgressBar();
+            updateQuestionCounter();
+            updateNavigationButtons();
         }
 
-        // Select Answer
         function selectAnswer(index) {
             userAnswers[currentQuestion] = index;
+            const question = quizData[currentQuestion];
+            
+            // إعادة حساب النتيجة
+            score = 0;
+            for (let i = 0; i <= currentQuestion; i++) {
+                if (userAnswers[i] === quizData[i].correct) {
+                    score++;
+                }
+            }
+
             displayQuestion();
+            document.getElementById('nextBtn').disabled = false;
         }
 
-        // Next Question
         function nextQuestion() {
             if (userAnswers[currentQuestion] === null) {
-                // Animate the question container to indicate error
-                const questionContainer = document.querySelector('.question-container');
-                questionContainer.style.animation = 'shake 0.5s ease';
-                setTimeout(() => {
-                    questionContainer.style.animation = '';
-                }, 500);
-                
-                alert('الرجاء اختيار إجابة قبل الانتقال للسؤال التالي');
+                alert("الرجاء الإجابة على السؤال الحالي قبل الانتقال للسؤال التالي");
                 return;
             }
 
             if (currentQuestion < quizData.length - 1) {
                 currentQuestion++;
                 displayQuestion();
+                document.getElementById('nextBtn').disabled = true;
             } else {
-                calculateScore();
-                showResults();
+                finishTest();
             }
         }
 
-        // Previous Question
         function previousQuestion() {
             if (currentQuestion > 0) {
                 currentQuestion--;
                 displayQuestion();
+                // تمكين زر التالي إذا كان هناك إجابة على السؤال السابق
+                document.getElementById('nextBtn').disabled = userAnswers[currentQuestion] === null;
             }
         }
 
-        // Calculate Score
-        function calculateScore() {
-            score = 0;
-            for (let i = 0; i < quizData.length; i++) {
-                if (userAnswers[i] === quizData[i].correctAnswer) {
-                    score++;
-                }
+        function updateProgressBar() {
+            const progress = ((currentQuestion + 1) / quizData.length) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function updateQuestionCounter() {
+            document.getElementById('questionCounter').textContent = currentQuestion + 1;
+        }
+
+        function updateNavigationButtons() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            if (currentQuestion > 0) {
+                prevBtn.style.display = 'inline-flex';
+            } else {
+                prevBtn.style.display = 'none';
+            }
+
+            if (currentQuestion === quizData.length - 1) {
+                nextBtn.innerHTML = '<i class="fas fa-check"></i> إنهاء الاختبار';
+            } else {
+                nextBtn.innerHTML = '<i class="fas fa-arrow-left"></i> السؤال التالي';
             }
         }
 
-        // Show Results
-        function showResults() {
+        // ========== TEST RESULTS ==========
+        function finishTest() {
+            testEndTime = Date.now();
+            const testDuration = Math.round((testEndTime - testStartTime) / 60000);
+            
+            saveTestResults(testDuration);
+            displayTestResults(testDuration);
+            
+            // بدء المؤقت للإرسال التلقائي
+            startAutoSendTimer();
+        }
+
+        function saveTestResults(duration) {
+            const result = {
+                name: userData.name,
+                score: score,
+                duration: duration,
+                date: new Date().toLocaleDateString('ar-SA'),
+                timestamp: new Date().getTime(),
+                percentage: (score / quizData.length) * 100,
+                department: userData.department,
+                position: userData.position
+            };
+            
+            previousResults.unshift(result);
+            
+            if (previousResults.length > 20) {
+                previousResults = previousResults.slice(0, 20);
+            }
+            
+            localStorage.setItem('qualityAssessmentResults', JSON.stringify(previousResults));
+        }
+
+        function displayTestResults(duration) {
             document.getElementById('quizSection').classList.remove('active');
             document.getElementById('resultsSection').classList.add('active');
 
-            // Show permission request
-            document.getElementById('permissionRequest').style.display = 'block';
-
-            // Animate score circle with conic gradient
             const percentage = (score / quizData.length) * 100;
-            const scoreCircle = document.querySelector('.score-circle');
-            scoreCircle.style.background = `conic-gradient(var(--primary-color) 0% ${percentage}%, var(--light-color) ${percentage}% 100%)`;
+            const maxScore = quizData.length;
 
-            // Animate score number
-            let currentScore = 0;
-            const scoreElement = document.getElementById('scoreNumber');
-            const interval = setInterval(() => {
-                if (currentScore <= score) {
-                    scoreElement.textContent = currentScore;
-                    currentScore++;
-                } else {
-                    clearInterval(interval);
-                }
-            }, 50);
+            // Display score
+            document.getElementById('scoreDisplay').textContent = `${score}/${maxScore}`;
+            document.getElementById('finalScore').textContent = score;
+            document.getElementById('percentageScore').textContent = percentage.toFixed(1) + '%';
+            document.getElementById('testDuration').textContent = duration;
+            document.getElementById('resultUserName').textContent = `${userData.name} - ${userData.position} - ${userData.department}`;
 
             // Display stars
-            let stars = '';
-            let starCount = 0;
-            
-            if (percentage >= 90) starCount = 5;
-            else if (percentage >= 70) starCount = 4;
-            else if (percentage >= 50) starCount = 3;
-            else if (percentage >= 30) starCount = 2;
-            else starCount = 1;
-
-            for (let i = 0; i < 5; i++) {
-                stars += i < starCount ? '<i class="fas fa-star"></i>' : '<i class="far fa-star"></i>';
-            }
+            const stars = getStarRating(percentage);
             document.getElementById('starsDisplay').innerHTML = stars;
 
-            // Display message based on user type and score
+            // Display message
             let message = '';
-            let description = '';
-            
-            if (userType === 'engineer') {
-                if (percentage >= 90) {
-                    message = 'ممتاز! أداء استثنائي 🏆';
-                    description = 'تهانينا! لديك معرفة شاملة وعميقة بأنظمة الجودة وسلامة الغذاء. أنت مهندس جودة محترف بامتياز وقادر على قيادة فرق الجودة بكفاءة عالية.';
-                } else if (percentage >= 70) {
-                    message = 'جيد جداً! أداء قوي 👏';
-                    description = 'لديك فهم ممتاز لمبادئ الجودة وسلامة الغذاء. يمكنك تطوير مهاراتك أكثر بالاطلاع على أحدث معايير ISO 22000 وتطبيقات HACCP المتقدمة.';
-                } else if (percentage >= 50) {
-                    message = 'جيد! مستوى مقبول 💪';
-                    description = 'لديك أساسيات جيدة في أنظمة الجودة. ننصحك بالمزيد من التدريب على تطبيقات HACCP العملية وقراءة حالات دراسية لتحسين أدائك.';
-                } else {
-                    message = 'يحتاج لتحسين 📚';
-                    description = 'ننصحك بأخذ دورات تدريبية متخصصة في أنظمة إدارة الجودة وسلامة الغذاء، والاطلاع على دليل الجودة في شركتك بشكل أعمق.';
-                }
+            if (percentage >= 90) {
+                message = 'ممتاز! أداء استثنائي جداً';
+            } else if (percentage >= 80) {
+                message = 'جيد جداً! أداء قوية';
+            } else if (percentage >= 70) {
+                message = 'جيد! أداء مقبولة';
+            } else if (percentage >= 60) {
+                message = 'مقبول! يحتاج إلى تحسن';
             } else {
-                if (percentage >= 90) {
-                    message = 'ممتاز! عامل محترف 🏅';
-                    description = 'تهانينا! لديك التزام تام بتعليمات السلامة والإنتاج. أنت قدوة لزملائك في الالتزام بالمعايير وتطبيق أفضل ممارسات التصنيع الغذائي.';
-                } else if (percentage >= 70) {
-                    message = 'جيد جداً! معرفة ممتازة 👍';
-                    description = 'لديك فهم ممتاز لتعليمات الإنتاج والسلامة. استمر في تطبيق هذه المعرفة عملياً وشاركها مع زملائك الجدد لرفع مستوى الفريق.';
-                } else if (percentage >= 50) {
-                    message = 'جيد! مستوى مقبول 💼';
-                    description = 'لديك المعرفة الأساسية بتعليمات الإنتاج. ركز أكثر على تطبيق تعليمات السلامة الشخصية والالتزام بخطوات العمل القياسية.';
-                } else {
-                    message = 'يحتاج لتحسين 📋';
-                    description = 'يجب عليك مراجعة تعليمات دخول صالة الإنتاج مع مشرفك والالتزام بها بدقة لضمان سلامة المنتج وصحتك الشخصية.';
-                }
+                message = 'يحتاج إلى مراجعة وتحسن';
             }
+            document.getElementById('scoreMessage').textContent = message;
 
-            document.getElementById('resultMessage').textContent = message;
-            document.getElementById('resultDescription').textContent = description;
+            // Display progress analysis
+            displayProgressAnalysis();
 
-            // Start countdown for auto send
-            startAutoSendCountdown();
+            // Display chart
+            displayChart();
+
+            // Display previous results
+            displayPreviousResults();
+
+            // Display admin stats
+            displayAdminStats();
         }
 
-        // Start auto send countdown
-        function startAutoSendCountdown() {
-            countdownSeconds = 5;
-            document.getElementById('countdownTimer').style.display = 'block';
-            document.getElementById('countdown').textContent = countdownSeconds;
+        function getStarRating(percentage) {
+            const fullStars = Math.floor(percentage / 20);
+            let stars = '';
+            for (let i = 0; i < 5; i++) {
+                if (i < fullStars) {
+                    stars += '<i class="fas fa-star"></i>';
+                } else {
+                    stars += '<i class="far fa-star"></i>';
+                }
+            }
+            return stars;
+        }
+
+        // ========== AUTO-SEND TIMER ==========
+        function startAutoSendTimer() {
+            countdown = 3;
+            autoSendEnabled = true;
             
-            countdownInterval = setInterval(() => {
-                countdownSeconds--;
-                document.getElementById('countdown').textContent = countdownSeconds;
+            document.getElementById('countdownTimer').style.display = 'block';
+            document.getElementById('timerDisplay').textContent = countdown + ' ثواني';
+            
+            autoSendTimer = setInterval(() => {
+                countdown--;
+                document.getElementById('timerDisplay').textContent = countdown + ' ثواني';
                 
-                if (countdownSeconds <= 0) {
-                    clearInterval(countdownInterval);
+                if (countdown <= 0) {
+                    clearInterval(autoSendTimer);
+                    if (autoSendEnabled) {
+                        autoSendTestResultsViaWhatsApp();
+                    }
                     document.getElementById('countdownTimer').style.display = 'none';
-                    sendResultsViaWhatsApp();
                 }
             }, 1000);
+            
+            // إلغاء المؤثر عند الضغط على أي زر
+            const buttons = document.querySelectorAll('.btn');
+            buttons.forEach(button => {
+                button.addEventListener('click', () => {
+                    clearInterval(autoSendTimer);
+                    autoSendEnabled = false;
+                    document.getElementById('countdownTimer').style.display = 'none';
+                });
+            });
         }
 
-        // Send Results via WhatsApp
-        function sendResultsViaWhatsApp() {
-            // Clear the countdown
-            if (countdownInterval) {
-                clearInterval(countdownInterval);
-                document.getElementById('countdownTimer').style.display = 'none';
+        // ========== WHATSAPP AUTO-SEND FOR TEST RESULTS ==========
+        function autoSendTestResultsViaWhatsApp() {
+            const currentResult = previousResults[0];
+            const percentage = currentResult.percentage.toFixed(1);
+
+            let message = `*نتائج اختبار الجودة - شركة باعشن*\n\n`;
+            message += `👤 الاسم: ${userData.name}\n`;
+            message += `💼 الوظيفة: ${userData.position}\n`;
+            message += `🏢 القسم: ${userData.department}\n`;
+            message += `📊 النتيجة: ${currentResult.score}/${quizData.length}\n`;
+            message += `📈 النسبة المئوية: ${percentage}%\n`;
+            message += `⏱️ وقت الاختبار: ${currentResult.duration} دقيقة\n`;
+            message += `📅 التاريخ: ${currentResult.date}\n`;
+            message += `🎯 نوع الاختبار: اختبار عامل الإنتاج\n\n`;
+
+            // Add progress analysis
+            if (previousResults.length >= 2) {
+                const previousResult = previousResults[1];
+                const scoreDiff = currentResult.score - previousResult.score;
+                const percentDiff = currentResult.percentage - previousResult.percentage;
+
+                message += `*📊 تحليل التقدم:*\n`;
+                message += `التحسن في النقاط: ${scoreDiff >= 0 ? '+' : ''}${scoreDiff}\n`;
+                message += `التحسن في النسبة: ${percentDiff >= 0 ? '+' : ''}${percentDiff.toFixed(1)}%\n`;
+                message += `النتيجة السابقة: ${previousResult.score}/${quizData.length}\n\n`;
             }
-            
-            // Show sending message
-            document.getElementById('sendingMessage').style.display = 'flex';
-            document.getElementById('sendResultsBtn').disabled = true;
 
-            const percentage = (score / quizData.length) * 100;
-            let starRating = '';
-            
-            if (percentage >= 90) starRating = '⭐⭐⭐⭐⭐ (5/5)';
-            else if (percentage >= 70) starRating = '⭐⭐⭐⭐☆ (4/5)';
-            else if (percentage >= 50) starRating = '⭐⭐⭐☆☆ (3/5)';
-            else if (percentage >= 30) starRating = '⭐⭐☆☆☆ (2/5)';
-            else starRating = '⭐☆☆☆☆ (1/5)';
+            message += `✅ تم إنشاء النتيجة تلقائياً بواسطة نظام تقييم الجودة`;
 
-            let level = '';
-            if (percentage >= 90) level = 'ممتاز';
-            else if (percentage >= 70) level = 'جيد جداً';
-            else if (percentage >= 50) level = 'جيد';
-            else level = 'يحتاج لتحسين';
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/+201129724884?text=${encodedMessage}`;
+            window.open(whatsappUrl, '_blank');
+        }
 
-            // Prepare answers details
-            let answersDetails = '\n\n📝 *تفاصيل الإجابات:*\n';
-            for (let i = 0; i < quizData.length; i++) {
-                const question = quizData[i];
-                const userAnswer = userAnswers[i];
-                const isCorrect = userAnswer === question.correctAnswer;
-                
-                answersDetails += `\n${i + 1}. ${question.question}\n`;
-                answersDetails += `   ${isCorrect ? '✅' : '❌'} إجابة المتقدم: ${question.options[userAnswer]}\n`;
-                if (!isCorrect) {
-                    answersDetails += `   ✅ الإجابة الصحيحة: ${question.options[question.correctAnswer]}\n`;
-                    answersDetails += `   📖 التفسير: ${question.explanation}\n`;
+        // ========== MANUAL WHATSAPP SHARE FOR TEST RESULTS ==========
+        function shareTestResultsViaWhatsApp() {
+            const currentResult = previousResults[0];
+            const percentage = currentResult.percentage.toFixed(1);
+
+            let message = `*نتائج اختبار الجودة - شركة باعشن*\n\n`;
+            message += `👤 الاسم: ${userData.name}\n`;
+            message += `💼 الوظيفة: ${userData.position}\n`;
+            message += `🏢 القسم: ${userData.department}\n`;
+            message += `📊 النتيجة: ${currentResult.score}/${quizData.length}\n`;
+            message += `📈 النسبة المئوية: ${percentage}%\n`;
+            message += `⏱️ وقت الاختبار: ${currentResult.duration} دقيقة\n`;
+            message += `📅 التاريخ: ${currentResult.date}\n`;
+            message += `🎯 نوع الاختبار: اختبار عامل الإنتاج\n\n`;
+
+            // Add progress analysis
+            if (previousResults.length >= 2) {
+                const previousResult = previousResults[1];
+                const scoreDiff = currentResult.score - previousResult.score;
+                const percentDiff = currentResult.percentage - previousResult.percentage;
+
+                message += `*📊 تحليل التقدم:*\n`;
+                message += `التحسن في النقاط: ${scoreDiff >= 0 ? '+' : ''}${scoreDiff}\n`;
+                message += `التحسن في النسبة: ${percentDiff >= 0 ? '+' : ''}${percentDiff.toFixed(1)}%\n`;
+                message += `النتيجة السابقة: ${previousResult.score}/${quizData.length}\n\n`;
+
+                if (previousResults.length >= 3) {
+                    const thirdResult = previousResults[2];
+                    const trendDiff = currentResult.score - thirdResult.score;
+                    const trendLabel = trendDiff > 0 ? '📈 تحسن مستمر' : (trendDiff < 0 ? '📉 تراجع' : '➡️ استقرار');
+                    message += `الاتجاه العام: ${trendLabel}\n\n`;
                 }
             }
 
-            const testType = userType === 'engineer' ? 'مهندس الجودة' : 'عامل الإنتاج';
-            const experience = userData.experience || 'غير محدد';
-            
-            const message = `
-🏆 *نتيجة اختبار تقييم ${testType}*
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            // Add statistics
+            if (previousResults.length > 1) {
+                const bestScore = Math.max(...previousResults.map(r => r.score));
+                const averageScore = (previousResults.reduce((sum, r) => sum + r.score, 0) / previousResults.length).toFixed(1);
 
-👤 *معلومات المتقدم:*
-• الاسم: ${userData.name}
-• البريد الإلكتروني: ${userData.email}
-• رقم الهاتف: ${userData.phone}
-• القسم: ${userData.department}
-• المسمى الوظيفي: ${userData.position}
-• سنوات الخبرة: ${experience}
-• نوع التقييم: ${testType}
+                message += `*📈 إحصائيات عامة:*\n`;
+                message += `إجمالي الاختبارات: ${previousResults.length}\n`;
+                message += `أفضل نتيجة: ${bestScore}/${quizData.length}\n`;
+                message += `متوسط النتائج: ${averageScore}/${quizData.length}\n\n`;
+            }
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+            message += `✅ تم إنشاء النتيجة بواسطة نظام تقييم الجودة - شركة باعشن`;
 
-📊 *نتيجة الاختبار:*
-• الدرجة: ${score} من ${quizData.length}
-• النسبة المئوية: ${percentage.toFixed(1)}%
-• التقييم بالنجوم: ${starRating}
-• المستوى: ${level}
-• التاريخ: ${new Date().toLocaleDateString('ar-SA')}
-• الوقت: ${new Date().toLocaleTimeString('ar-SA')}
+            const encodedMessage = encodeURIComponent(message);
+            const whatsappUrl = `https://wa.me/+201129724884?text=${encodedMessage}`;
+            window.open(whatsappUrl, '_blank');
+        }
 
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-${answersDetails}
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+        // ========== PROGRESS ANALYSIS ==========
+        function displayProgressAnalysis() {
+            if (previousResults.length < 2) {
+                document.getElementById('progressAnalysisContainer').style.display = 'none';
+                return;
+            }
 
-🏢 *شركة أحمد محمد صالح باعشن وشركاه*
-📞 الهاتف: 00966112666666
-📍 العنوان: الرياض، المملكة العربية السعودية
-🌐 الموقع: www.bashen.com.sa
+            document.getElementById('progressAnalysisContainer').style.display = 'block';
 
-#جودة_ربيع #باعشن #تقييم_الجودة
+            const currentResult = previousResults[0];
+            const previousResult = previousResults[1];
+
+            const scoreDiff = currentResult.score - previousResult.score;
+            const percentDiff = currentResult.percentage - previousResult.percentage;
+
+            let html = `
+                <div class="progress-item">
+                    <span class="progress-label">التحسن في النقاط</span>
+                    <span class="progress-value ${scoreDiff >= 0 ? '' : 'negative'}">
+                        ${scoreDiff >= 0 ? '+' : ''}${scoreDiff}
+                    </span>
+                </div>
+                <div class="progress-item">
+                    <span class="progress-label">التحسن في النسبة المئوية</span>
+                    <span class="progress-value ${percentDiff >= 0 ? '' : 'negative'}">
+                        ${percentDiff >= 0 ? '+' : ''}${percentDiff.toFixed(1)}%
+                    </span>
+                </div>
+                <div class="progress-item">
+                    <span class="progress-label">النتيجة السابقة</span>
+                    <span class="progress-value">${previousResult.score}/${quizData.length}</span>
+                </div>
             `;
 
-            const phoneNumber = '201129724884';
-            const whatsappURL = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
-            
-            // Try to open WhatsApp with user permission
-            setTimeout(() => {
-                window.open(whatsappURL, '_blank');
+            if (previousResults.length >= 3) {
+                const thirdResult = previousResults[2];
+                const trendDiff = currentResult.score - thirdResult.score;
+                const trendLabel = trendDiff > 0 ? 'تحسن مستمر' : (trendDiff < 0 ? 'تراجع' : 'استقرار');
                 
-                setTimeout(() => {
-                    document.getElementById('sendingMessage').innerHTML = '<i class="fas fa-check-circle" style="color: var(--success-color); font-size: 1.5em;"></i> <span>تم فتح WhatsApp! الرجاء إرسال الرسالة.</span>';
-                    document.getElementById('sendResultsBtn').disabled = false;
-                }, 2000);
-            }, 1000);
+                html += `
+                    <div class="progress-item">
+                        <span class="progress-label">الاتجاه العام (آخر 3 اختبارات)</span>
+                        <span class="progress-value">${trendLabel}</span>
+                    </div>
+                `;
+            }
+
+            document.getElementById('progressAnalysisContent').innerHTML = html;
         }
 
-        // Restart Quiz
-        function restartQuiz() {
-            // Clear any intervals
-            if (countdownInterval) clearInterval(countdownInterval);
+        // ========== CHART DISPLAY ==========
+        function displayChart() {
+            if (previousResults.length < 2) {
+                document.getElementById('chartContainer').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('chartContainer').style.display = 'block';
+
+            const limitedResults = previousResults.slice(0, 10).reverse();
+            const labels = limitedResults.map((r, i) => `${i + 1}`);
+            const scores = limitedResults.map(r => r.score);
+            const percentages = limitedResults.map(r => r.percentage);
+
+            const ctx = document.getElementById('resultsChart').getContext('2d');
             
-            // Reset quiz state
-            currentQuestion = 0;
-            userAnswers = [];
-            score = 0;
+            if (window.resultsChartInstance) {
+                window.resultsChartInstance.destroy();
+            }
+
+            window.resultsChartInstance = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'النقاط',
+                            data: scores,
+                            borderColor: '#2c5aa0',
+                            backgroundColor: 'rgba(44, 90, 160, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 6,
+                            pointBackgroundColor: '#2c5aa0',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2
+                        },
+                        {
+                            label: 'النسبة المئوية (%)',
+                            data: percentages,
+                            borderColor: '#ff9800',
+                            backgroundColor: 'rgba(255, 152, 0, 0.1)',
+                            borderWidth: 3,
+                            fill: true,
+                            tension: 0.4,
+                            pointRadius: 6,
+                            pointBackgroundColor: '#ff9800',
+                            pointBorderColor: '#fff',
+                            pointBorderWidth: 2
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'top',
+                            labels: {
+                                font: { family: "'Cairo', sans-serif", size: 14, weight: 'bold' },
+                                padding: 20,
+                                usePointStyle: true
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 15,
+                            ticks: {
+                                font: { family: "'Cairo', sans-serif", size: 12 }
+                            },
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                font: { family: "'Cairo', sans-serif", size: 12 }
+                            },
+                            grid: {
+                                display: false
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // ========== DISPLAY PREVIOUS RESULTS ==========
+        function displayPreviousResults() {
+            if (previousResults.length < 2) {
+                document.getElementById('previousResults').style.display = 'none';
+                return;
+            }
+
+            document.getElementById('previousResults').style.display = 'block';
+
+            const resultsToShow = previousResults.slice(0, 10);
+            let html = '';
+
+            resultsToShow.forEach((result, index) => {
+                const starRating = getStarRating(result.percentage);
+                html += `
+                    <div class="result-item">
+                        <div class="result-date">${result.date}</div>
+                        <div class="result-score">${result.score}/${quizData.length}</div>
+                        <div class="result-stars">${starRating}</div>
+                        <div style="font-size: 0.9em; color: #666;">${(result.percentage).toFixed(1)}%</div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('previousResultsContainer').innerHTML = html;
+        }
+
+        // ========== ADMIN STATS ==========
+        function displayAdminStats() {
+            const totalTests = previousResults.length;
+            const bestScore = totalTests > 0 ? Math.max(...previousResults.map(r => r.score)) : 0;
+            const averageScore = totalTests > 0 ? (previousResults.reduce((sum, r) => sum + r.score, 0) / totalTests).toFixed(1) : 0;
+
+            let improvementRate = 0;
+            if (previousResults.length >= 2) {
+                const recent = previousResults.slice(0, 5);
+                const older = previousResults.slice(5, 10);
+                
+                if (older.length > 0) {
+                    const recentAvg = recent.reduce((sum, r) => sum + r.score, 0) / recent.length;
+                    const olderAvg = older.reduce((sum, r) => sum + r.score, 0) / older.length;
+                    improvementRate = olderAvg > 0 ? (((recentAvg - olderAvg) / olderAvg) * 100).toFixed(1) : 0;
+                }
+            }
+
+            document.getElementById('totalTests').textContent = totalTests;
+            document.getElementById('bestScore').textContent = bestScore;
+            document.getElementById('averageScore').textContent = averageScore;
+            document.getElementById('improvementRate').textContent = improvementRate + '%';
+        }
+
+        // ========== COMPLAINT FUNCTIONS ==========
+        function startComplaint() {
+            document.getElementById('userInfoSection').classList.remove('active');
+            document.getElementById('complaintSection').classList.add('active');
             
-            // Go back to user type selection
+            // تحميل المسودة إذا وجدت
+            loadComplaintDraftToForm();
+        }
+
+        function loadComplaintDraftToForm() {
+            if (complaintDraft) {
+                document.getElementById('complaintType').value = complaintDraft.type || '';
+                document.getElementById('complaintTitle').value = complaintDraft.title || '';
+                document.getElementById('complaintMessage').value = complaintDraft.message || '';
+                document.getElementById('complaintPriority').value = complaintDraft.priority || 'عادية';
+                
+                document.getElementById('complaintSavedIndicator').style.display = 'block';
+            }
+        }
+
+        function saveComplaintDraft() {
+            const type = document.getElementById('complaintType').value;
+            const title = document.getElementById('complaintTitle').value.trim();
+            const message = document.getElementById('complaintMessage').value.trim();
+            const priority = document.getElementById('complaintPriority').value;
+
+            complaintDraft = {
+                type: type,
+                title: title,
+                message: message,
+                priority: priority,
+                savedAt: new Date().toISOString()
+            };
+            
+            localStorage.setItem('qualityComplaintDraft', JSON.stringify(complaintDraft));
+            
+            alert('تم حفظ المسودة بنجاح! يمكنك العودة لإكمالها لاحقاً.');
+        }
+
+        function validateComplaint() {
+            let isValid = true;
+            
+            const type = document.getElementById('complaintType').value;
+            const title = document.getElementById('complaintTitle').value.trim();
+            const message = document.getElementById('complaintMessage').value.trim();
+
+            document.querySelectorAll('.error-message').forEach(el => el.style.display = 'none');
+
+            if (!type) {
+                document.getElementById('typeError').style.display = 'block';
+                isValid = false;
+            }
+
+            if (!title) {
+                document.getElementById('titleError').style.display = 'block';
+                isValid = false;
+            }
+
+            if (!message) {
+                document.getElementById('messageError').style.display = 'block';
+                isValid = false;
+            }
+
+            return isValid;
+        }
+
+        function sendComplaintViaWhatsApp() {
+            if (!validateComplaint()) {
+                return;
+            }
+
+            const type = document.getElementById('complaintType').value;
+            const title = document.getElementById('complaintTitle').value.trim();
+            const message = document.getElementById('complaintMessage').value.trim();
+            const priority = document.getElementById('complaintPriority').value;
+            
+            const reference = 'REF-' + new Date().getFullYear() + '-' + Math.floor(Math.random() * 1000);
+
+            let whatsappMessage = `*${type} - شركة باعشن*\n\n`;
+            whatsappMessage += `👤 المرسل: ${userData.name}\n`;
+            whatsappMessage += `📞 الهاتف: ${userData.phone}\n`;
+            whatsappMessage += `📧 البريد: ${userData.email}\n`;
+            whatsappMessage += `🏢 القسم: ${userData.department}\n`;
+            whatsappMessage += `💼 الوظيفة: ${userData.position}\n`;
+            whatsappMessage += `🏷️ الأولوية: ${priority}\n`;
+            whatsappMessage += `🔖 المرجع: ${reference}\n\n`;
+            whatsappMessage += `*${title}*\n`;
+            whatsappMessage += `${message}\n\n`;
+            whatsappMessage += `📅 التاريخ: ${new Date().toLocaleDateString('ar-SA')}\n`;
+            whatsappMessage += `⏰ الوقت: ${new Date().toLocaleTimeString('ar-SA')}\n\n`;
+            whatsappMessage += `✅ تم إرسال هذه الرسالة عبر نظام الشكاوى والمقترحات`;
+
+            const encodedMessage = encodeURIComponent(whatsappMessage);
+            const whatsappUrl = `https://wa.me/+201129724884?text=${encodedMessage}`;
+            
+            // حفظ البيانات
+            saveComplaintData(type, title, message, priority, reference);
+            
+            // حذف المسودة بعد الإرسال
+            localStorage.removeItem('qualityComplaintDraft');
+            complaintDraft = null;
+            
+            // عرض شاشة النجاح
+            showComplaintSuccess(reference);
+            
+            // فتح واتساب في نافذة جديدة
+            window.open(whatsappUrl, '_blank');
+        }
+
+        function saveComplaintData(type, title, message, priority, reference) {
+            const complaintData = {
+                type: type,
+                title: title,
+                message: message,
+                priority: priority,
+                reference: reference,
+                sender: userData.name,
+                phone: userData.phone,
+                email: userData.email,
+                department: userData.department,
+                position: userData.position,
+                date: new Date().toISOString()
+            };
+            
+            // حفظ في localStorage للتاريخ
+            const complaints = JSON.parse(localStorage.getItem('qualityComplaints') || '[]');
+            complaints.unshift(complaintData);
+            
+            if (complaints.length > 50) {
+                complaints = complaints.slice(0, 50);
+            }
+            
+            localStorage.setItem('qualityComplaints', JSON.stringify(complaints));
+        }
+
+        function showComplaintSuccess(reference) {
+            document.getElementById('complaintSection').classList.remove('active');
+            document.getElementById('complaintSuccessSection').classList.add('active');
+            document.getElementById('complaintReference').textContent = reference;
+        }
+
+        function sendAnotherComplaint() {
+            document.getElementById('complaintSuccessSection').classList.remove('active');
+            document.getElementById('complaintSection').classList.add('active');
+            
+            // مسح النموذج
+            document.getElementById('complaintType').value = '';
+            document.getElementById('complaintTitle').value = '';
+            document.getElementById('complaintMessage').value = '';
+            document.getElementById('complaintPriority').value = 'عادية';
+            document.getElementById('complaintSavedIndicator').style.display = 'none';
+        }
+
+        function goToServiceSelection() {
+            document.getElementById('complaintSuccessSection').classList.remove('active');
+            document.getElementById('userTypeSection').classList.add('active');
+        }
+
+        // ========== RESTART TEST ==========
+        function restartTest() {
             document.getElementById('resultsSection').classList.remove('active');
             document.getElementById('userTypeSection').classList.add('active');
+            
+            currentQuestion = 0;
+            score = 0;
+            userAnswers = [];
+            
+            // إلغاء أي مؤقتات نشطة
+            if (autoSendTimer) {
+                clearInterval(autoSendTimer);
+            }
+        }
+
+        // ========== CLEAR DATA ==========
+        function clearAllData() {
+            if (confirm('هل تريد فعلاً حذف جميع البيانات المخزنة؟ هذا الإجراء لا يمكن التراجع عنه.')) {
+                localStorage.removeItem('qualityAssessmentUserData');
+                localStorage.removeItem('qualityAssessmentResults');
+                localStorage.removeItem('qualityComplaintDraft');
+                localStorage.removeItem('qualityComplaints');
+                
+                userData = {};
+                previousResults = [];
+                complaintDraft = null;
+                
+                document.getElementById('userName').value = '';
+                document.getElementById('userEmail').value = '';
+                document.getElementById('userPhone').value = '';
+                document.getElementById('userDepartment').value = '';
+                document.getElementById('userPosition').value = '';
+                document.getElementById('userExperience').value = '';
+                document.getElementById('savedDataIndicator').style.display = 'none';
+                
+                document.getElementById('complaintType').value = '';
+                document.getElementById('complaintTitle').value = '';
+                document.getElementById('complaintMessage').value = '';
+                document.getElementById('complaintPriority').value = 'عادية';
+                document.getElementById('complaintSavedIndicator').style.display = 'none';
+                
+                alert('تم حذف جميع البيانات بنجاح!');
+                
+                goToServiceSelection();
+            }
         }
     </script>
 </body>
